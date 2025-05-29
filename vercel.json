@@ -25,7 +25,7 @@
     },
     {
       "src": "/admin/(.*)",
-      "dest": "/client/dist/$1"
+      "dest": "/client/dist/assets/$1"
     },
     {
       "src": "/css/(.*)",
@@ -52,11 +52,12 @@
       "dest": "/client/site/mail/$1"
     },
     {
-      "src": "/(.*\\.[^/]*)",
-      "dest": "/client/site/$1"
+      "src": "/(.*)",
+      "dest": "/client/site/$1",
+      "continue": true
     },
     {
-      "src": "/((?!admin).*)",
+      "src": "/(.*)",
       "dest": "/client/site/index.html"
     }
   ]

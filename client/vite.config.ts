@@ -35,7 +35,7 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
-  base: '/admin/',
+  base: '/',
   // Static file serving
   publicDir: 'public'
 }) 
