@@ -23,15 +23,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html')
-      },
-      output: {
-        manualChunks: undefined
-      }
-    }
+    emptyOutDir: true
   },
   resolve: {
     alias: {
