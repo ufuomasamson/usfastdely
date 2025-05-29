@@ -9,7 +9,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/template.html"
+      "destination": "/index.html"
     }
   ],
   "headers": [
