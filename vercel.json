@@ -20,12 +20,12 @@
       "dest": "/api/$1"
     },
     {
-      "src": "/admin/(.*)",
+      "src": "/admin",
       "dest": "/client/dist/index.html"
     },
     {
-      "src": "/admin",
-      "dest": "/client/dist/index.html"
+      "src": "/admin/(.*)",
+      "dest": "/client/dist/$1"
     },
     {
       "src": "/css/(.*)",
@@ -56,7 +56,7 @@
       "dest": "/client/site/$1"
     },
     {
-      "src": "/(.*)",
+      "src": "/((?!admin).*)",
       "dest": "/client/site/index.html"
     }
   ]
