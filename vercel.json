@@ -20,12 +20,19 @@
       "dest": "/api/$1"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/admin",
       "dest": "/client/dist/index.html"
     },
     {
+      "src": "/admin/(.*)\\.([a-zA-Z0-9]+)$",
+      "dest": "/client/dist/assets/$1.$2"
+    },
+    {
       "src": "/admin/(.*)",
-      "dest": "/client/dist/assets/$1"
+      "dest": "/client/dist/index.html"
     },
     {
       "src": "/css/(.*)",
@@ -53,12 +60,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/client/site/$1",
-      "continue": true
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/site/index.html"
+      "dest": "/client/site/$1"
     }
   ]
 } 
