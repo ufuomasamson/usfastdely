@@ -10,7 +10,8 @@
       "use": "@vercel/static-build",
       "config": {
         "buildCommand": "cd client && npm install && npm run build",
-        "outputDirectory": "client/dist"
+        "outputDirectory": "client/dist",
+        "framework": "vite"
       }
     }
   ],
@@ -48,22 +49,12 @@
       "dest": "/client/dist/assets/$1"
     },
     {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/admin.*",
+      "src": "/(login|admin|track)(.*)",
+      "headers": { "cache-control": "s-maxage=1" },
       "dest": "/client/dist/index.html"
     },
     {
-      "src": "/login",
-      "dest": "/client/dist/index.html"
-    },
-    {
-      "src": "/track",
-      "dest": "/client/dist/index.html"
-    },
-    {
-      "src": "/((?!admin|login|track).*)",
+      "src": "/(.*)",
       "dest": "/client/site/$1"
     }
   ]
