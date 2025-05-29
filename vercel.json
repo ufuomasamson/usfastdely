@@ -9,7 +9,8 @@
       "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "buildCommand": "cd client && npm install && npm run build",
+        "outputDirectory": "client/dist"
       }
     }
   ],
@@ -19,20 +20,27 @@
       "dest": "/api/$1"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/admin",
-      "dest": "/client/dist/index.html"
+      "dest": "client/dist/index.html"
     },
     {
       "src": "/admin/(.*)",
-      "dest": "/client/dist/index.html"
+      "dest": "client/dist/index.html"
     },
     {
       "src": "/assets/(.*)",
       "dest": "/client/site/assets/$1"
     },
     {
+      "src": "/(.*)\\.(?:js|css|svg|jpg|jpeg|png|gif|ico|json)",
+      "dest": "/client/site/$1.$2"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/client/site/$1"
+      "dest": "/client/site/index.html"
     }
   ]
 } 
