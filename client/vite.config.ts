@@ -25,7 +25,9 @@ export default defineConfig({
     assetsDir: 'assets',
     emptyOutDir: true,
     rollupOptions: {
-      input: resolve(__dirname, 'index.html')
+      output: {
+        manualChunks: undefined
+      }
     }
   },
   resolve: {
@@ -33,6 +35,7 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
+  base: '/',
   // Static file serving
   publicDir: 'public'
 }) 
