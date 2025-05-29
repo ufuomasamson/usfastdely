@@ -1,0 +1,38 @@
+{
+  "name": "client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@coreui/icons": "^3.0.1",
+    "@coreui/icons-react": "^2.3.0",
+    "@coreui/react": "^5.0.0",
+    "@coreui/react-chartjs": "^3.0.0",
+    "@fortawesome/fontawesome-free": "^6.5.1",
+    "@supabase/supabase-js": "^2.49.8",
+    "@types/crypto-js": "^4.2.2",
+    "bootstrap": "^5.3.2",
+    "chart.js": "^4.4.1",
+    "crypto-js": "^4.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^8.56.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "globals": "^13.24.0",
+    "postcss": "^8.4.32",
+    "vite": "^5.0.10"
+  }
+}
