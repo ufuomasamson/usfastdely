@@ -22,12 +22,10 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true,
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-        site: resolve(__dirname, 'site/index.html'),
-        tracking: resolve(__dirname, 'site/tracking-result.html')
-      }
+      input: resolve(__dirname, 'index.html')
     }
   },
   resolve: {
