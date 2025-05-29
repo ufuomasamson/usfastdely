@@ -1,34 +1,38 @@
 {
   "version": 2,
-  "buildCommand": "cd client && npm install && npm run build",
-  "outputDirectory": "client/dist",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
+      "src": "client/site/**/*",
+      "use": "@vercel/static"
     },
     {
-      "source": "/admin/:path*",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/admin",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/((?!admin).*)",
-      "destination": "/client/site/index.html"
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
-  "headers": [
+  "routes": [
     {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/admin",
+      "dest": "/client/dist/index.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/client/dist/index.html"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/client/site/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/site/$1"
     }
   ]
 } 
