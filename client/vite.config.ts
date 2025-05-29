@@ -23,14 +23,19 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        admin: resolve(__dirname, 'index.html')
+      }
+    }
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
     },
   },
-  base: '/',
+  base: '/admin/',
   // Static file serving
   publicDir: 'public'
 }) 

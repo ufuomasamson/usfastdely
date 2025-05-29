@@ -21,6 +21,18 @@
       "dest": "/api/$1"
     },
     {
+      "src": "/admin",
+      "dest": "/client/dist/index.html"
+    },
+    {
+      "src": "/admin/(.*)\\.([a-zA-Z0-9]+)$",
+      "dest": "/client/dist/assets/$1.$2"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/client/dist/index.html"
+    },
+    {
       "src": "/css/(.*)",
       "dest": "/client/site/css/$1"
     },
@@ -45,13 +57,7 @@
       "dest": "/client/site/mail/$1"
     },
     {
-      "src": "/assets/(.*)",
-      "dest": "/client/dist/assets/$1"
-    },
-    {
-      "src": "/(login|admin|track)(.*)",
-      "headers": { "cache-control": "s-maxage=1" },
-      "dest": "/client/dist/index.html"
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
