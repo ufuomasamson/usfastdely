@@ -293,6 +293,8 @@ const AdminDashboard = () => {
               <h4 className="mb-0">Manage Shipments</h4>
             </CCardHeader>
             <CCardBody className="bg-white p-4">
+              {error && <CAlert color="danger">{error}</CAlert>}
+              {success && <CAlert color="success">{success}</CAlert>}
               {loading ? (
                 <div className="text-center py-5">
                   <CSpinner color="primary" />
@@ -301,11 +303,13 @@ const AdminDashboard = () => {
                 <CTable style={styles.table} hover responsive>
                   <CTableHead>
                     <CTableRow>
-                      <CTableHeaderCell scope="col">Tracking #</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Tracking Number</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Sender</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Receiver</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Origin</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Destination</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Status</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Location</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Current Location</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
@@ -315,6 +319,8 @@ const AdminDashboard = () => {
                         <CTableDataCell>{shipment.tracking_number}</CTableDataCell>
                         <CTableDataCell>{shipment.sender_name}</CTableDataCell>
                         <CTableDataCell>{shipment.receiver_name}</CTableDataCell>
+                        <CTableDataCell>{shipment.origin}</CTableDataCell>
+                        <CTableDataCell>{shipment.destination}</CTableDataCell>
                         <CTableDataCell>
                           <span className={`badge bg-${getStatusColor(shipment.status)}`}>
                             {shipment.status}
@@ -325,19 +331,19 @@ const AdminDashboard = () => {
                         </CTableDataCell>
                         <CTableDataCell>
                           <CButton 
-                            color="light"
+                            color="primary"
                             size="sm"
                             className="me-2"
                             onClick={() => handleEdit(shipment)}
                           >
-                            <CIcon icon={cilPencil} />
+                            <CIcon icon={cilPencil} /> Edit
                           </CButton>
                           <CButton
                             color="danger"
                             size="sm"
                             onClick={() => handleDelete(shipment.id)}
                           >
-                            <i className="fas fa-trash"></i>
+                            Delete
                           </CButton>
                         </CTableDataCell>
                       </CTableRow>
@@ -356,6 +362,8 @@ const AdminDashboard = () => {
               <h4 className="mb-0">Create New Shipment</h4>
             </CCardHeader>
             <CCardBody className="bg-white p-4">
+              {error && <CAlert color="danger">{error}</CAlert>}
+              {success && <CAlert color="success">{success}</CAlert>}
               <CForm onSubmit={handleSubmit}>
                 <CRow>
                   <CCol md={6}>
@@ -434,6 +442,39 @@ const AdminDashboard = () => {
                         onChange={handleInputChange}
                         required
                       />
+                    </div>
+                  </CCol>
+                </CRow>
+
+                <CRow>
+                  <CCol md={6}>
+                    <div className="mb-3">
+                      <CFormLabel>Status</CFormLabel>
+                      <CFormSelect
+                        name="status"
+                        value={form.status}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        {statusOptions.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </CFormSelect>
+                    </div>
+                  </CCol>
+                  <CCol md={6}>
+                    <div className="mb-3">
+                      <CFormLabel>Condition</CFormLabel>
+                      <CFormSelect
+                        name="condition"
+                        value={form.condition}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        {conditionOptions.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </CFormSelect>
                     </div>
                   </CCol>
                 </CRow>
