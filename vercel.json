@@ -1,27 +1,11 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "client/site/**/*",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "client/admin/**/*",
-      "use": "@vercel/static"
+      "source": "/(.*)",
+      "destination": "/client/index.html"
     }
   ],
-  "routes": [
-    {
-      "src": "/admin",
-      "dest": "/client/admin/index.html"
-    },
-    {
-      "src": "/admin/(.*)",
-      "dest": "/client/admin/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/site/$1"
-    }
-  ]
+  "buildCommand": "cd client && npm install && npm run build",
+  "outputDirectory": "client/dist",
+  "installCommand": "cd client && npm install"
 } 
