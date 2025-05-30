@@ -217,6 +217,16 @@
           margin-left: 0;
         }
       }
+
+      .page {
+        display: none;
+      }
+      .page.active {
+        display: block;
+      }
+      #dashboard-page {
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -254,7 +264,7 @@
     <!-- Main Content -->
     <div class="main-content">
       <!-- Dashboard Page -->
-      <div class="page" id="dashboard-page">
+      <div class="page active" id="dashboard-page">
         <header class="header">
           <div class="container-fluid">
             <div class="row align-items-center">
@@ -351,7 +361,7 @@
       </div>
 
       <!-- Shipments Page -->
-      <div class="page d-none" id="shipments-page">
+      <div class="page" id="shipments-page">
         <header class="header">
           <div class="container-fluid">
             <div class="row align-items-center">
@@ -364,20 +374,26 @@
 
         <div class="container-fluid">
           <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <div class="d-flex gap-2">
-                <input type="text" class="form-control" placeholder="Search shipments..." id="searchShipments">
-                <select class="form-select" id="statusFilter">
-                  <option value="">All Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="in_transit">In Transit</option>
-                  <option value="delivered">Delivered</option>
-                  <option value="issue">Issue</option>
-                </select>
+            <div class="card-header">
+              <div class="row align-items-center">
+                <div class="col-md-6">
+                  <input type="text" class="form-control" id="searchShipments" placeholder="Search shipments...">
+                </div>
+                <div class="col-md-4">
+                  <select class="form-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="in_transit">In Transit</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="issue">Issue</option>
+                  </select>
+                </div>
+                <div class="col-md-2 text-end">
+                  <button class="btn btn-primary btn-sm w-100" onclick="showPage('create-shipment')">
+                    <i class="fas fa-plus"></i> New Shipment
+                  </button>
+                </div>
               </div>
-              <button class="btn btn-primary btn-sm" onclick="showPage('create-shipment')">
-                <i class="fas fa-plus"></i> New Shipment
-              </button>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -404,7 +420,7 @@
       </div>
 
       <!-- Create Shipment Page -->
-      <div class="page d-none" id="create-shipment-page">
+      <div class="page" id="create-shipment-page">
         <header class="header">
           <div class="container-fluid">
             <div class="row align-items-center">

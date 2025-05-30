@@ -6,14 +6,16 @@ const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 // Page Management
 function showPage(pageId) {
     console.log('Showing page:', pageId);
-    // Hide all pages
+    
+    // Remove active class from all pages
     document.querySelectorAll('.page').forEach(page => {
-        page.classList.add('d-none');
+        page.classList.remove('active');
     });
+    
     // Show the selected page
     const targetPage = document.getElementById(`${pageId}-page`);
     if (targetPage) {
-        targetPage.classList.remove('d-none');
+        targetPage.classList.add('active');
         // Update active nav link
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.remove('active');
@@ -21,6 +23,11 @@ function showPage(pageId) {
                 link.classList.add('active');
             }
         });
+
+        // Refresh data when showing shipments page
+        if (pageId === 'shipments') {
+            fetchShipments();
+        }
     } else {
         console.error(`Page ${pageId} not found`);
     }
@@ -210,6 +217,7 @@ async function createShipment(formData) {
         if (error) throw error;
 
         alert('Shipment created successfully!');
+        document.getElementById('createShipmentForm').reset();
         showPage('dashboard');
         fetchShipments();
     } catch (error) {
