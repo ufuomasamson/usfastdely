@@ -10,7 +10,7 @@
       "use": "@vercel/static-build",
       "config": {
         "buildCommand": "cd client/admin && npm install && npm run build",
-        "outputDirectory": "client/admin/dist",
+        "outputDirectory": "dist",
         "distDir": "dist"
       }
     }
@@ -21,12 +21,12 @@
       "dest": "/api/$1"
     },
     {
-      "src": "/admin",
-      "dest": "/client/admin/dist/index.html"
+      "src": "/admin/?",
+      "dest": "/dist/index.html"
     },
     {
       "src": "/admin/(.*)",
-      "dest": "/client/admin/dist/$1"
+      "dest": "/dist/$1"
     },
     {
       "src": "/css/(.*)",

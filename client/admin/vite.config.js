@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   root: resolve(__dirname),
   build: {
-    outDir: 'dist',
+    outDir: resolve(__dirname, 'dist'),
     emptyOutDir: true,
     rollupOptions: {
       input: {
@@ -17,6 +17,6 @@ export default defineConfig({
   server: {
     port: 5174
   },
-  base: '/admin/',
+  base: '',
   publicDir: 'public'
 }) 
