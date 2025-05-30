@@ -11,7 +11,213 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="css/style.css" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #FF4800;
+        --secondary: #F2F2F4;
+        --dark: #1F1F2E;
+        --light: #FFFFFF;
+        --text: #757575;
+      }
+
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--secondary);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 250px;
+        background-color: var(--dark);
+        padding: 20px;
+        color: var(--light);
+        z-index: 1000;
+      }
+
+      .logo {
+        text-align: center;
+        padding: 20px 0;
+      }
+
+      .logo img {
+        max-width: 150px;
+      }
+
+      .nav-link {
+        color: var(--light) !important;
+        padding: 12px 20px;
+        margin: 4px 0;
+        border-radius: 5px;
+        transition: all 0.3s;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        background-color: var(--primary);
+        color: var(--light) !important;
+      }
+
+      .nav-link i {
+        margin-right: 10px;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .header {
+        background-color: var(--light);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+      }
+
+      .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .user-name {
+        color: var(--dark);
+        font-weight: 500;
+      }
+
+      .user-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      /* Stats Cards */
+      .stats-card {
+        background-color: var(--light);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        height: 100%;
+        margin-bottom: 20px;
+      }
+
+      .stats-icon {
+        width: 60px;
+        height: 60px;
+        background-color: var(--primary);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--light);
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+
+      .stats-info h3 {
+        font-size: 16px;
+        color: var(--text);
+        margin: 0;
+      }
+
+      .stats-info p {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--dark);
+        margin: 5px 0 0;
+      }
+
+      /* Table */
+      .card {
+        background-color: var(--light);
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+
+      .card-header {
+        background-color: var(--light);
+        border-bottom: 1px solid var(--secondary);
+        padding: 20px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 20px;
+        color: var(--dark);
+      }
+
+      .table th {
+        color: var(--text);
+        font-weight: 500;
+        border-bottom-width: 1px;
+        padding: 12px 20px;
+      }
+
+      .table td {
+        color: var(--dark);
+        vertical-align: middle;
+        padding: 12px 20px;
+      }
+
+      .table .badge {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+      }
+
+      .btn-primary:hover {
+        background-color: #e64100;
+        border-color: #e64100;
+      }
+
+      .btn-sm {
+        padding: 5px 10px;
+        margin: 0 2px;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 200px;
+        }
+        .main-content {
+          margin-left: 200px;
+        }
+        .stats-card {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .sidebar {
+          width: 100%;
+          position: relative;
+          margin-bottom: 20px;
+        }
+        .main-content {
+          margin-left: 0;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- Sidebar -->
@@ -51,7 +257,7 @@
         <div class="container-fluid">
           <div class="row align-items-center">
             <div class="col">
-              <h1>Dashboard</h1>
+              <h1 class="h3 mb-0">Dashboard</h1>
             </div>
             <div class="col-auto">
               <div class="user-menu">
@@ -63,10 +269,10 @@
         </div>
       </header>
 
-      <div class="container-fluid mt-4">
+      <div class="container-fluid">
         <!-- Stats Cards -->
-        <div class="row">
-          <div class="col-md-3">
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6 col-md-3">
             <div class="stats-card">
               <div class="stats-icon">
                 <i class="fas fa-box"></i>
@@ -77,7 +283,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-sm-6 col-md-3">
             <div class="stats-card">
               <div class="stats-icon">
                 <i class="fas fa-truck"></i>
@@ -88,7 +294,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-sm-6 col-md-3">
             <div class="stats-card">
               <div class="stats-icon">
                 <i class="fas fa-check-circle"></i>
@@ -99,7 +305,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-sm-6 col-md-3">
             <div class="stats-card">
               <div class="stats-icon">
                 <i class="fas fa-exclamation-circle"></i>
@@ -113,13 +319,16 @@
         </div>
 
         <!-- Recent Orders -->
-        <div class="card mt-4">
-          <div class="card-header">
-            <h2>Recent Orders</h2>
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Recent Orders</h2>
+            <button class="btn btn-primary btn-sm">
+              <i class="fas fa-plus"></i> New Order
+            </button>
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table" id="ordersTable">
+              <table class="table table-hover" id="ordersTable">
                 <thead>
                   <tr>
                     <th>Order ID</th>

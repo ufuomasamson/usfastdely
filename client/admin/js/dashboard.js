@@ -17,6 +17,12 @@ const sampleOrders = [
         customer: 'Mike Johnson',
         status: 'Pending',
         date: '2024-03-13'
+    },
+    {
+        id: 'ORD004',
+        customer: 'Sarah Williams',
+        status: 'Issue',
+        date: '2024-03-12'
     }
 ];
 
@@ -41,17 +47,28 @@ function populateOrdersTable() {
     sampleOrders.forEach(order => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${order.id}</td>
-            <td>${order.customer}</td>
-            <td><span class="badge bg-${getStatusColor(order.status)}">${order.status}</span></td>
+            <td><strong>#${order.id}</strong></td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="ms-2">
+                        <div class="fw-bold">${order.customer}</div>
+                    </div>
+                </div>
+            </td>
+            <td><span class="badge rounded-pill bg-${getStatusColor(order.status)}">${order.status}</span></td>
             <td>${formatDate(order.date)}</td>
             <td>
-                <button class="btn btn-sm btn-primary" onclick="viewOrder('${order.id}')">
-                    <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-secondary" onclick="editOrder('${order.id}')">
-                    <i class="fas fa-edit"></i>
-                </button>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-primary" onclick="viewOrder('${order.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="editOrder('${order.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteOrder('${order.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </td>
         `;
         tableBody.appendChild(row);
@@ -67,6 +84,8 @@ function getStatusColor(status) {
             return 'success';
         case 'Issue':
             return 'danger';
+        case 'Pending':
+            return 'warning';
         default:
             return 'secondary';
     }
@@ -91,6 +110,13 @@ function editOrder(orderId) {
     // Implement edit order functionality
 }
 
+function deleteOrder(orderId) {
+    if (confirm(`Are you sure you want to delete order ${orderId}?`)) {
+        alert(`Deleting order ${orderId}`);
+        // Implement delete order functionality
+    }
+}
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
     updateStats();
@@ -101,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             navLinks.forEach(l => l.classList.remove('active'));
-            e.target.classList.add('active');
+            link.classList.add('active');
         });
     });
 }); 
