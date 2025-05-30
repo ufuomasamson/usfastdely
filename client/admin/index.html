@@ -397,10 +397,11 @@
                 <div class="col-md-4">
                   <select class="form-select" id="statusFilter">
                     <option value="">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="in_transit">In Transit</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="issue">Issue</option>
+                    <option value="Processing">Processing</option>
+                    <option value="In Transit">In Transit</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Delayed">Delayed</option>
+                    <option value="On Hold">On Hold</option>
                   </select>
                 </div>
                 <div class="col-md-2 text-end">
@@ -415,17 +416,19 @@
                 <table class="table table-hover" id="allShipmentsTable">
                   <thead>
                     <tr>
-                      <th>Tracking ID</th>
-                      <th>Customer</th>
-                      <th>Status</th>
+                      <th>Tracking Number</th>
+                      <th>Sender Name</th>
+                      <th>Receiver Name</th>
                       <th>Origin</th>
                       <th>Destination</th>
-                      <th>Date</th>
+                      <th>Current Location</th>
+                      <th>Status</th>
+                      <th>Condition</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <!-- All shipments will be populated here -->
+                    <!-- Shipments will be populated here -->
                   </tbody>
                 </table>
               </div>
@@ -452,61 +455,67 @@
               <form id="createShipmentForm">
                 <div class="row g-3">
                   <div class="col-md-6">
-                    <h4>Sender Information</h4>
                     <div class="mb-3">
                       <label class="form-label">Sender Name</label>
-                      <input type="text" class="form-control" name="senderName" required>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Sender Address</label>
-                      <textarea class="form-control" name="senderAddress" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Sender Phone</label>
-                      <input type="tel" class="form-control" name="senderPhone" required>
+                      <input type="text" class="form-control" name="sender_name" required>
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <h4>Receiver Information</h4>
                     <div class="mb-3">
                       <label class="form-label">Receiver Name</label>
-                      <input type="text" class="form-control" name="receiverName" required>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Receiver Address</label>
-                      <textarea class="form-control" name="receiverAddress" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Receiver Phone</label>
-                      <input type="tel" class="form-control" name="receiverPhone" required>
+                      <input type="text" class="form-control" name="receiver_name" required>
                     </div>
                   </div>
-                  <div class="col-12">
-                    <h4>Shipment Details</h4>
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label class="form-label">Package Type</label>
-                        <select class="form-select" name="packageType" required>
-                          <option value="">Select Package Type</option>
-                          <option value="document">Document</option>
-                          <option value="parcel">Parcel</option>
-                          <option value="freight">Freight</option>
-                        </select>
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label">Weight (kg)</label>
-                        <input type="number" class="form-control" name="weight" required>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label">Special Instructions</label>
-                        <textarea class="form-control" name="instructions" rows="2"></textarea>
-                      </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Origin</label>
+                      <input type="text" class="form-control" name="origin" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Destination</label>
+                      <input type="text" class="form-control" name="destination" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Current Country</label>
+                      <input type="text" class="form-control" name="current_country" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Current State</label>
+                      <input type="text" class="form-control" name="current_state" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Status</label>
+                      <select class="form-select" name="status" required>
+                        <option value="Processing">Processing</option>
+                        <option value="In Transit">In Transit</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Delayed">Delayed</option>
+                        <option value="On Hold">On Hold</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Condition</label>
+                      <select class="form-select" name="condition" required>
+                        <option value="Good">Good</option>
+                        <option value="Damaged">Damaged</option>
+                        <option value="Lost">Lost</option>
+                      </select>
                     </div>
                   </div>
                 </div>
                 <div class="mt-4">
                   <button type="submit" class="btn btn-primary">Create Shipment</button>
-                  <button type="button" class="btn btn-secondary" onclick="showPage('dashboard')">Cancel</button>
+                  <button type="button" class="btn btn-secondary" onclick="showPage('shipments')">Cancel</button>
                 </div>
               </form>
             </div>
