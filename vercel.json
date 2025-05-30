@@ -1,54 +1,16 @@
 {
   "version": 2,
-  "builds": [
+  "buildCommand": "cd client/admin && npm install && npm run build",
+  "outputDirectory": "client/admin/dist",
+  "framework": "vite",
+  "rewrites": [
     {
-      "src": "client/site/**/*",
-      "use": "@vercel/static"
+      "source": "/admin",
+      "destination": "/client/admin/dist/index.html"
     },
     {
-      "src": "client/admin/package.json",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/admin/(.*)",
-      "dest": "client/admin/$1"
-    },
-    {
-      "src": "/admin",
-      "dest": "client/admin/index.html"
-    },
-    {
-      "src": "/css/(.*)",
-      "dest": "/client/site/css/$1"
-    },
-    {
-      "src": "/js/(.*)",
-      "dest": "/client/site/js/$1"
-    },
-    {
-      "src": "/img/(.*)",
-      "dest": "/client/site/img/$1"
-    },
-    {
-      "src": "/lib/(.*)",
-      "dest": "/client/site/lib/$1"
-    },
-    {
-      "src": "/scss/(.*)",
-      "dest": "/client/site/scss/$1"
-    },
-    {
-      "src": "/mail/(.*)",
-      "dest": "/client/site/mail/$1"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/site/$1"
+      "source": "/admin/(.*)",
+      "destination": "/client/admin/dist/$1"
     }
   ]
 } 
