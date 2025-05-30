@@ -228,23 +228,23 @@
       <nav>
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link active" href="#dashboard">
+            <a class="nav-link active" href="#" data-page="dashboard">
               <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#orders">
-              <i class="fas fa-box"></i> Orders
+            <a class="nav-link" href="#" data-page="shipments">
+              <i class="fas fa-shipping-fast"></i> Shipments
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#tracking">
-              <i class="fas fa-map-marker-alt"></i> Tracking
+            <a class="nav-link" href="#" data-page="create-shipment">
+              <i class="fas fa-plus-circle"></i> Create Shipment
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#settings">
-              <i class="fas fa-cog"></i> Settings
+          <li class="nav-item mt-auto">
+            <a class="nav-link text-danger" href="#" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i> Logout
             </a>
           </li>
         </ul>
@@ -253,95 +253,231 @@
 
     <!-- Main Content -->
     <div class="main-content">
-      <header class="header">
+      <!-- Dashboard Page -->
+      <div class="page" id="dashboard-page">
+        <header class="header">
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <div class="col">
+                <h1 class="h3 mb-0">Dashboard</h1>
+              </div>
+              <div class="col-auto">
+                <div class="user-menu">
+                  <span class="user-name">Admin</span>
+                  <img src="../site/img/user.jpg" alt="User" class="user-image">
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
         <div class="container-fluid">
-          <div class="row align-items-center">
-            <div class="col">
-              <h1 class="h3 mb-0">Dashboard</h1>
+          <!-- Stats Cards -->
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-md-3">
+              <div class="stats-card">
+                <div class="stats-icon">
+                  <i class="fas fa-box"></i>
+                </div>
+                <div class="stats-info">
+                  <h3>Total Shipments</h3>
+                  <p class="total-orders">0</p>
+                </div>
+              </div>
             </div>
-            <div class="col-auto">
-              <div class="user-menu">
-                <span class="user-name">Admin</span>
-                <img src="../site/img/user.jpg" alt="User" class="user-image">
+            <div class="col-sm-6 col-md-3">
+              <div class="stats-card">
+                <div class="stats-icon">
+                  <i class="fas fa-truck"></i>
+                </div>
+                <div class="stats-info">
+                  <h3>In Transit</h3>
+                  <p class="in-transit">0</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+              <div class="stats-card">
+                <div class="stats-icon">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stats-info">
+                  <h3>Delivered</h3>
+                  <p class="delivered">0</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+              <div class="stats-card">
+                <div class="stats-icon">
+                  <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="stats-info">
+                  <h3>Issues</h3>
+                  <p class="issues">0</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Shipments -->
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h2 class="mb-0">Recent Shipments</h2>
+              <button class="btn btn-primary btn-sm" onclick="showPage('create-shipment')">
+                <i class="fas fa-plus"></i> New Shipment
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover" id="shipmentsTable">
+                  <thead>
+                    <tr>
+                      <th>Tracking ID</th>
+                      <th>Customer</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Shipments will be populated here -->
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      <div class="container-fluid">
-        <!-- Stats Cards -->
-        <div class="row g-3 mb-4">
-          <div class="col-sm-6 col-md-3">
-            <div class="stats-card">
-              <div class="stats-icon">
-                <i class="fas fa-box"></i>
-              </div>
-              <div class="stats-info">
-                <h3>Total Orders</h3>
-                <p class="total-orders">0</p>
+      <!-- Shipments Page -->
+      <div class="page d-none" id="shipments-page">
+        <header class="header">
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <div class="col">
+                <h1 class="h3 mb-0">All Shipments</h1>
               </div>
             </div>
           </div>
-          <div class="col-sm-6 col-md-3">
-            <div class="stats-card">
-              <div class="stats-icon">
-                <i class="fas fa-truck"></i>
+        </header>
+
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <div class="d-flex gap-2">
+                <input type="text" class="form-control" placeholder="Search shipments..." id="searchShipments">
+                <select class="form-select" id="statusFilter">
+                  <option value="">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="in_transit">In Transit</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="issue">Issue</option>
+                </select>
               </div>
-              <div class="stats-info">
-                <h3>In Transit</h3>
-                <p class="in-transit">0</p>
-              </div>
+              <button class="btn btn-primary btn-sm" onclick="showPage('create-shipment')">
+                <i class="fas fa-plus"></i> New Shipment
+              </button>
             </div>
-          </div>
-          <div class="col-sm-6 col-md-3">
-            <div class="stats-card">
-              <div class="stats-icon">
-                <i class="fas fa-check-circle"></i>
-              </div>
-              <div class="stats-info">
-                <h3>Delivered</h3>
-                <p class="delivered">0</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-3">
-            <div class="stats-card">
-              <div class="stats-icon">
-                <i class="fas fa-exclamation-circle"></i>
-              </div>
-              <div class="stats-info">
-                <h3>Issues</h3>
-                <p class="issues">0</p>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover" id="allShipmentsTable">
+                  <thead>
+                    <tr>
+                      <th>Tracking ID</th>
+                      <th>Customer</th>
+                      <th>Status</th>
+                      <th>Origin</th>
+                      <th>Destination</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- All shipments will be populated here -->
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Recent Orders -->
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Recent Orders</h2>
-            <button class="btn btn-primary btn-sm">
-              <i class="fas fa-plus"></i> New Order
-            </button>
+      <!-- Create Shipment Page -->
+      <div class="page d-none" id="create-shipment-page">
+        <header class="header">
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <div class="col">
+                <h1 class="h3 mb-0">Create New Shipment</h1>
+              </div>
+            </div>
           </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-hover" id="ordersTable">
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Orders will be populated here -->
-                </tbody>
-              </table>
+        </header>
+
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-body">
+              <form id="createShipmentForm">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <h4>Sender Information</h4>
+                    <div class="mb-3">
+                      <label class="form-label">Sender Name</label>
+                      <input type="text" class="form-control" name="senderName" required>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Sender Address</label>
+                      <textarea class="form-control" name="senderAddress" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Sender Phone</label>
+                      <input type="tel" class="form-control" name="senderPhone" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <h4>Receiver Information</h4>
+                    <div class="mb-3">
+                      <label class="form-label">Receiver Name</label>
+                      <input type="text" class="form-control" name="receiverName" required>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Receiver Address</label>
+                      <textarea class="form-control" name="receiverAddress" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Receiver Phone</label>
+                      <input type="tel" class="form-control" name="receiverPhone" required>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <h4>Shipment Details</h4>
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Package Type</label>
+                        <select class="form-select" name="packageType" required>
+                          <option value="">Select Package Type</option>
+                          <option value="document">Document</option>
+                          <option value="parcel">Parcel</option>
+                          <option value="freight">Freight</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Weight (kg)</label>
+                        <input type="number" class="form-control" name="weight" required>
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label">Special Instructions</label>
+                        <textarea class="form-control" name="instructions" rows="2"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <button type="submit" class="btn btn-primary">Create Shipment</button>
+                  <button type="button" class="btn btn-secondary" onclick="showPage('dashboard')">Cancel</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -350,7 +486,7 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/dashboard.js"></script>
   </body>
 </html> 

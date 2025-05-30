@@ -1,71 +1,113 @@
-// Sample data - Replace with actual data from your backend
-const sampleOrders = [
-    {
-        id: 'ORD001',
-        customer: 'John Doe',
-        status: 'In Transit',
-        date: '2024-03-15'
-    },
-    {
-        id: 'ORD002',
-        customer: 'Jane Smith',
-        status: 'Delivered',
-        date: '2024-03-14'
-    },
-    {
-        id: 'ORD003',
-        customer: 'Mike Johnson',
-        status: 'Pending',
-        date: '2024-03-13'
-    },
-    {
-        id: 'ORD004',
-        customer: 'Sarah Williams',
-        status: 'Issue',
-        date: '2024-03-12'
+// Initialize Supabase client
+const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzNjI4MzUsImV4cCI6MjA2MzkzODgzNX0.ikIBv5P6U93kkcEUXQWrhjkH4n3JsLFgeMiK__6QgP8';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// Page Management
+function showPage(pageId) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.add('d-none');
+    });
+    // Show the selected page
+    document.getElementById(`${pageId}-page`).classList.remove('d-none');
+    // Update active nav link
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('data-page') === pageId) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Fetch Shipments from Supabase
+async function fetchShipments() {
+    try {
+        const { data: shipments, error } = await supabase
+            .from('shipments')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        updateStats(shipments);
+        populateShipmentsTable(shipments);
+        populateAllShipmentsTable(shipments);
+    } catch (error) {
+        console.error('Error fetching shipments:', error);
+        alert('Failed to load shipments');
     }
-];
+}
 
-// Update stats
-function updateStats() {
-    const totalOrders = sampleOrders.length;
-    const inTransit = sampleOrders.filter(order => order.status === 'In Transit').length;
-    const delivered = sampleOrders.filter(order => order.status === 'Delivered').length;
-    const issues = sampleOrders.filter(order => order.status === 'Issue').length;
+// Update dashboard stats
+function updateStats(shipments) {
+    const totalShipments = shipments.length;
+    const inTransit = shipments.filter(shipment => shipment.status === 'in_transit').length;
+    const delivered = shipments.filter(shipment => shipment.status === 'delivered').length;
+    const issues = shipments.filter(shipment => shipment.status === 'issue').length;
 
-    document.querySelector('.total-orders').textContent = totalOrders;
+    document.querySelector('.total-orders').textContent = totalShipments;
     document.querySelector('.in-transit').textContent = inTransit;
     document.querySelector('.delivered').textContent = delivered;
     document.querySelector('.issues').textContent = issues;
 }
 
-// Populate orders table
-function populateOrdersTable() {
-    const tableBody = document.querySelector('#ordersTable tbody');
+// Populate recent shipments table
+function populateShipmentsTable(shipments) {
+    const tableBody = document.querySelector('#shipmentsTable tbody');
     tableBody.innerHTML = '';
 
-    sampleOrders.forEach(order => {
+    shipments.slice(0, 5).forEach(shipment => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td><strong>#${order.id}</strong></td>
+            <td><strong>#${shipment.tracking_id}</strong></td>
             <td>
                 <div class="d-flex align-items-center">
                     <div class="ms-2">
-                        <div class="fw-bold">${order.customer}</div>
+                        <div class="fw-bold">${shipment.receiver_name}</div>
                     </div>
                 </div>
             </td>
-            <td><span class="badge rounded-pill bg-${getStatusColor(order.status)}">${order.status}</span></td>
-            <td>${formatDate(order.date)}</td>
+            <td><span class="badge rounded-pill bg-${getStatusColor(shipment.status)}">${formatStatus(shipment.status)}</span></td>
+            <td>${formatDate(shipment.created_at)}</td>
             <td>
                 <div class="btn-group">
-                    <button class="btn btn-sm btn-primary" onclick="viewOrder('${order.id}')">
+                    <button class="btn btn-sm btn-primary" onclick="viewShipment('${shipment.id}')">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-secondary" onclick="editOrder('${order.id}')">
+                    <button class="btn btn-sm btn-secondary" onclick="updateShipment('${shipment.id}')">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteOrder('${order.id}')">
+                </div>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Populate all shipments table
+function populateAllShipmentsTable(shipments) {
+    const tableBody = document.querySelector('#allShipmentsTable tbody');
+    tableBody.innerHTML = '';
+
+    shipments.forEach(shipment => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>#${shipment.tracking_id}</strong></td>
+            <td>${shipment.receiver_name}</td>
+            <td><span class="badge rounded-pill bg-${getStatusColor(shipment.status)}">${formatStatus(shipment.status)}</span></td>
+            <td>${shipment.sender_address}</td>
+            <td>${shipment.receiver_address}</td>
+            <td>${formatDate(shipment.created_at)}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-primary" onclick="viewShipment('${shipment.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="updateShipment('${shipment.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteShipment('${shipment.id}')">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -78,17 +120,23 @@ function populateOrdersTable() {
 // Helper functions
 function getStatusColor(status) {
     switch (status) {
-        case 'In Transit':
+        case 'in_transit':
             return 'primary';
-        case 'Delivered':
+        case 'delivered':
             return 'success';
-        case 'Issue':
+        case 'issue':
             return 'danger';
-        case 'Pending':
+        case 'pending':
             return 'warning';
         default:
             return 'secondary';
     }
+}
+
+function formatStatus(status) {
+    return status.split('_').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
 }
 
 function formatDate(dateString) {
@@ -99,35 +147,109 @@ function formatDate(dateString) {
     });
 }
 
-// Action handlers
-function viewOrder(orderId) {
-    alert(`Viewing order ${orderId}`);
-    // Implement view order functionality
-}
+// Create new shipment
+async function createShipment(formData) {
+    try {
+        const { data, error } = await supabase
+            .from('shipments')
+            .insert([{
+                sender_name: formData.get('senderName'),
+                sender_address: formData.get('senderAddress'),
+                sender_phone: formData.get('senderPhone'),
+                receiver_name: formData.get('receiverName'),
+                receiver_address: formData.get('receiverAddress'),
+                receiver_phone: formData.get('receiverPhone'),
+                package_type: formData.get('packageType'),
+                weight: formData.get('weight'),
+                special_instructions: formData.get('instructions'),
+                status: 'pending'
+            }]);
 
-function editOrder(orderId) {
-    alert(`Editing order ${orderId}`);
-    // Implement edit order functionality
-}
+        if (error) throw error;
 
-function deleteOrder(orderId) {
-    if (confirm(`Are you sure you want to delete order ${orderId}?`)) {
-        alert(`Deleting order ${orderId}`);
-        // Implement delete order functionality
+        alert('Shipment created successfully!');
+        showPage('dashboard');
+        fetchShipments();
+    } catch (error) {
+        console.error('Error creating shipment:', error);
+        alert('Failed to create shipment');
     }
 }
 
-// Initialize dashboard
+// Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    updateStats();
-    populateOrdersTable();
+    // Initial load
+    fetchShipments();
 
-    // Add active class to current nav item
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', (e) => {
-            navLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
+            if (e.currentTarget.id === 'logoutBtn') {
+                handleLogout();
+            } else {
+                const page = e.currentTarget.getAttribute('data-page');
+                if (page) showPage(page);
+            }
         });
     });
-}); 
+
+    // Create shipment form
+    document.getElementById('createShipmentForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        createShipment(formData);
+    });
+
+    // Search and filter
+    document.getElementById('searchShipments')?.addEventListener('input', handleSearch);
+    document.getElementById('statusFilter')?.addEventListener('change', handleFilter);
+});
+
+// Logout handler
+async function handleLogout() {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        window.location.href = '/login.html';
+    } catch (error) {
+        console.error('Error logging out:', error);
+        alert('Failed to log out');
+    }
+}
+
+// Search and filter handlers
+function handleSearch(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    filterShipments(searchTerm, document.getElementById('statusFilter').value);
+}
+
+function handleFilter(e) {
+    const statusFilter = e.target.value;
+    filterShipments(document.getElementById('searchShipments').value.toLowerCase(), statusFilter);
+}
+
+async function filterShipments(searchTerm, status) {
+    try {
+        let query = supabase
+            .from('shipments')
+            .select('*');
+        
+        if (status) {
+            query = query.eq('status', status);
+        }
+
+        const { data: shipments, error } = await query;
+
+        if (error) throw error;
+
+        const filtered = shipments.filter(shipment =>
+            shipment.tracking_id.toLowerCase().includes(searchTerm) ||
+            shipment.receiver_name.toLowerCase().includes(searchTerm) ||
+            shipment.receiver_address.toLowerCase().includes(searchTerm)
+        );
+
+        populateAllShipmentsTable(filtered);
+    } catch (error) {
+        console.error('Error filtering shipments:', error);
+    }
+} 
