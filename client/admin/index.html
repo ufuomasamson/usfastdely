@@ -42,12 +42,21 @@
       }
 
       .logo {
+        padding: 20px;
         text-align: center;
-        padding: 20px 0;
+        background-color: var(--dark);
+        margin-bottom: 20px;
       }
 
-      .logo img {
-        max-width: 150px;
+      .logo h1 {
+        color: var(--light);
+        font-size: 24px;
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .logo span {
+        color: var(--primary);
       }
 
       .nav-link {
@@ -98,7 +107,11 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        object-fit: cover;
+        background-color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #757575;
       }
 
       /* Stats Cards */
@@ -233,7 +246,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="logo">
-        <img src="../site/img/logo.png" alt="Faster Logo" class="img-fluid">
+        <h1>Faster<span>Delivery</span></h1>
       </div>
       <nav>
         <ul class="nav flex-column">
@@ -274,7 +287,9 @@
               <div class="col-auto">
                 <div class="user-menu">
                   <span class="user-name">Admin</span>
-                  <img src="../site/img/user.jpg" alt="User" class="user-image">
+                  <div class="user-image">
+                    <i class="fas fa-user"></i>
+                  </div>
                 </div>
               </div>
             </div>
@@ -503,6 +518,6 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="./js/dashboard.js"></script>
   </body>
 </html> 

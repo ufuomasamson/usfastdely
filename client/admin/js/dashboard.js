@@ -1,7 +1,10 @@
 // Initialize Supabase client
 const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzNjI4MzUsImV4cCI6MjA2MzkzODgzNX0.ikIBv5P6U93kkcEUXQWrhjkH4n3JsLFgeMiK__6QgP8';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+console.log('Initializing Supabase client...');
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+console.log('Supabase client initialized:', supabase);
 
 // Page Management
 function showPage(pageId) {
