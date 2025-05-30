@@ -6,27 +6,18 @@
       "use": "@vercel/static"
     },
     {
-      "src": "client/admin",
-      "use": "@vercel/static-build",
-      "config": {
-        "buildCommand": "cd client/admin && npm install && npm run build",
-        "outputDirectory": "dist",
-        "distDir": "dist"
-      }
+      "src": "client/admin/package.json",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/admin/?",
-      "dest": "/dist/index.html"
-    },
-    {
       "src": "/admin/(.*)",
-      "dest": "/dist/$1"
+      "dest": "client/admin/$1"
+    },
+    {
+      "src": "/admin",
+      "dest": "client/admin/index.html"
     },
     {
       "src": "/css/(.*)",
