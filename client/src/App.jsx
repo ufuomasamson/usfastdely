@@ -5,7 +5,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import TrackingResult from "./pages/TrackingResult";
 import Login from './pages/Login';
 import { authService } from './services/authService';
-import Dashboard from './pages/Dashboard';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -53,8 +52,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
-        <Route path="/admin/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
