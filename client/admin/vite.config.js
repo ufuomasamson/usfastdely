@@ -7,11 +7,16 @@ export default defineConfig({
   root: resolve(__dirname),
   build: {
     outDir: 'dist',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
+    }
   },
   server: {
     port: 5174
   },
-  base: '/',
+  base: '/admin/',
   publicDir: 'public'
 }) 

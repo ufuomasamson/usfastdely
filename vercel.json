@@ -6,11 +6,12 @@
       "use": "@vercel/static"
     },
     {
-      "src": "client/admin/package.json",
+      "src": "client/admin",
       "use": "@vercel/static-build",
       "config": {
         "buildCommand": "cd client/admin && npm install && npm run build",
-        "outputDirectory": "client/admin/dist"
+        "outputDirectory": "client/admin/dist",
+        "distDir": "dist"
       }
     }
   ],
