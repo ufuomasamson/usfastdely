@@ -1,16 +1,36 @@
 {
   "version": 2,
-  "buildCommand": "cd client/admin && npm install && npm run build",
-  "outputDirectory": "client/admin/dist",
-  "framework": "vite",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/admin",
-      "destination": "/client/admin/dist/index.html"
+      "src": "client/site/**/*",
+      "use": "@vercel/static"
     },
     {
-      "source": "/admin/(.*)",
-      "destination": "/client/admin/dist/$1"
+      "src": "client/admin",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "cd client/admin && npm install && npm run build",
+        "outputDirectory": "client/admin/dist",
+        "distDir": "dist"
+      }
     }
-  ]
+  ],
+  "routes": [
+    {
+      "src": "/admin/(.*)",
+      "dest": "/client/admin/dist/$1",
+      "continue": true
+    },
+    {
+      "src": "/admin",
+      "dest": "/client/admin/dist/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/site/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "development"
+  }
 } 
