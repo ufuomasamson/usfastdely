@@ -12,15 +12,6 @@
   ],
   "routes": [
     {
-      "src": "/admin/(.*)",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
-      },
-      "dest": "/client/admin/$1"
-    },
-    {
       "src": "/admin",
       "dest": "/client/admin/login.html"
     },
@@ -31,6 +22,15 @@
     {
       "src": "/admin/dashboard",
       "dest": "/client/admin/dashboard.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+      },
+      "dest": "/client/admin/$1"
     },
     {
       "handle": "filesystem"

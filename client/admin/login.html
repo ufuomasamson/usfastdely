@@ -177,12 +177,13 @@
       const supabaseUrl = 'https://ykqfyjpmhqjbqbxqhzxw.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrcWZ5anBtaHFqYnFieHFoenh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk4MjI1NzAsImV4cCI6MjAyNTM5ODU3MH0.Uh_BG7GPwGnE_5odTuGj4eXkw9iW_X9YE2_Qm-QJ7Ow';
 
-      // Create Supabase client
+      // Create Supabase client with retries and better error handling
       const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
-          detectSessionInUrl: false
+          detectSessionInUrl: false,
+          storage: window.sessionStorage
         },
         db: {
           schema: 'public'
@@ -199,31 +200,42 @@
         return CryptoJS.SHA256(password).toString();
       }
 
-      // Test connection immediately
-      async function testConnection() {
-        try {
-          console.log('Testing connection to:', supabaseUrl);
-          const { data, error } = await supabaseClient
-            .from('admin')
-            .select('count')
-            .limit(1);
-
-          if (error) {
-            console.error('Connection test error:', error);
-            throw error;
+      // Test connection with retries
+      async function testConnection(retries = 3) {
+        for (let i = 0; i < retries; i++) {
+          try {
+            console.log(`Testing connection (attempt ${i + 1}/${retries})...`);
+            const { data, error } = await supabaseClient
+              .from('admin')
+              .select('id')
+              .limit(1);
+            
+            if (error) {
+              console.error('Connection test error:', error);
+              if (i === retries - 1) throw error;
+              // Wait before retrying
+              await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+              continue;
+            }
+            
+            console.log('Connection test successful');
+            return true;
+          } catch (err) {
+            console.error('Connection test failed:', err);
+            if (i === retries - 1) return false;
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
           }
-
-          console.log('Connection test successful:', data);
-          return data;
-        } catch (err) {
-          console.error('Connection test failed:', err);
-          showError('Unable to connect to the server. Please try again later.');
-          throw err;
         }
+        return false;
       }
 
-      // Run connection test on load
-      window.addEventListener('load', testConnection);
+      // Test connection on page load with better error handling
+      testConnection().then(success => {
+        if (!success) {
+          showError('Unable to connect to the server. Please try again later.');
+        }
+      });
 
       // DOM Elements
       const loginForm = document.getElementById('loginForm');
@@ -250,7 +262,7 @@
           }
       };
 
-      // Handle form submission
+      // Handle form submission with better error handling
       loginForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           
@@ -262,6 +274,12 @@
               setLoading(true);
               console.log('Attempting login with:', { username });
 
+              // First test the connection
+              const isConnected = await testConnection(1);
+              if (!isConnected) {
+                throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+              }
+
               // Query the admin table for the username
               const { data, error } = await supabaseClient
                   .from('admin')
@@ -272,7 +290,9 @@
               console.log('Supabase response:', { data, error });
 
               if (error) {
-                  console.error('Supabase error:', error);
+                  if (error.code === 'PGRST301') {
+                    throw new Error('Database connection error. Please try again.');
+                  }
                   throw new Error(error.message || 'Error checking credentials');
               }
 
