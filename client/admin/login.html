@@ -168,15 +168,27 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
     <!-- Login JavaScript -->
     <script>
       // Initialize Supabase client
       const supabaseUrl = 'https://ykqfyjpmhqjbqbxqhzxw.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrcWZ5anBtaHFqYnFieHFoenh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk4MjI1NzAsImV4cCI6MjAyNTM5ODU3MH0.Uh_BG7GPwGnE_5odTuGj4eXkw9iW_X9YE2_Qm-QJ7Ow';
 
-      // Create Supabase client
-      const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+      // Create Supabase client with additional options
+      const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true
+        },
+        global: {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+          }
+        }
+      });
 
       // DOM Elements
       const loginForm = document.getElementById('loginForm');
@@ -225,7 +237,7 @@
 
               if (error) {
                   console.error('Supabase error:', error);
-                  throw new Error('Error checking credentials');
+                  throw new Error(error.message || 'Error checking credentials');
               }
 
               if (!data) {
