@@ -176,7 +176,7 @@
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrcWZ5anBtaHFqYnFieHFoenh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk4MjI1NzAsImV4cCI6MjAyNTM5ODU3MH0.Uh_BG7GPwGnE_5odTuGj4eXkw9iW_X9YE2_Qm-QJ7Ow';
 
       // Create Supabase client
-      const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
       // DOM Elements
       const loginForm = document.getElementById('loginForm');
@@ -215,7 +215,7 @@
               console.log('Attempting login with:', { username });
 
               // Query the admin table for the username
-              const { data, error } = await supabase
+              const { data, error } = await supabaseClient
                   .from('admin')
                   .select('id, username, password')
                   .eq('username', username)
