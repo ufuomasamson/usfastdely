@@ -1,6 +1,6 @@
 // Initialize Supabase client
-const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwOTIyMDgzNSwiZXhwIjoyMDI0Nzk2ODM1fQ.qwkKqwgCYBcv3Uz3RzqFqkjGvEqkHq-nMEzJn_Qh1V0';
+const supabaseUrl = 'https://ykqfyjpmhqjbqbxqhzxw.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrcWZ5anBtaHFqYnFieHFoenh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk4MjI1NzAsImV4cCI6MjAyNTM5ODU3MH0.Uh_BG7GPwGnE_5odTuGj4eXkw9iW_X9YE2_Qm-QJ7Ow';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 // DOM Elements
@@ -20,23 +20,38 @@ const showError = (message) => {
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const email = document.getElementById('email').value;
+    const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
     try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
+        // Query the admin table for the username and password
+        const { data, error } = await supabase
+            .from('admin')
+            .select('*')
+            .eq('username', username)
+            .single();
 
         if (error) throw error;
 
-        // Store the session
-        localStorage.setItem('sb-access-token', data.session.access_token);
-        localStorage.setItem('sb-refresh-token', data.session.refresh_token);
-        
-        // Redirect to dashboard
-        window.location.href = '/admin/dashboard.html';
+        if (!data) {
+            throw new Error('Invalid username or password');
+        }
+
+        // Check if password matches
+        if (data.password === password) {
+            // Store admin info in session storage
+            sessionStorage.setItem('adminUser', JSON.stringify({
+                id: data.id,
+                username: data.username,
+                isLoggedIn: true
+            }));
+            
+            // Redirect to dashboard
+            window.location.href = '/admin/dashboard.html';
+        } else {
+            throw new Error('Invalid username or password');
+        }
+
     } catch (error) {
         showError(error.message || 'An error occurred during login');
     }
