@@ -2,12 +2,5 @@
   "name": "faster-delivery",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "start": "serve .",
-    "build": "echo 'Static site, no build needed'"
-  },
-  "dependencies": {
-    "serve": "^14.2.1"
-  }
+  "type": "module"
 }
