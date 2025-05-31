@@ -1,7 +1,9 @@
 // Initialize Supabase client
 const supabaseUrl = 'https://ykqfyjpmhqjbqbxqhzxw.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrcWZ5anBtaHFqYnFieHFoenh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk4MjI1NzAsImV4cCI6MjAyNTM5ODU3MH0.Uh_BG7GPwGnE_5odTuGj4eXkw9iW_X9YE2_Qm-QJ7Ow';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// Create Supabase client
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // DOM Elements
 const loginForm = document.getElementById('loginForm');
@@ -20,18 +22,26 @@ const showError = (message) => {
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const username = document.getElementById('username').value;
+    const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     
     try {
-        // Query the admin table for the username and password
+        // Show loading state
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+        submitButton.disabled = true;
+
+        // Query the admin table for the username
         const { data, error } = await supabase
             .from('admin')
-            .select('*')
+            .select('id, username, password')
             .eq('username', username)
             .single();
 
-        if (error) throw error;
+        if (error) {
+            throw new Error('Error checking credentials');
+        }
 
         if (!data) {
             throw new Error('Invalid username or password');
@@ -54,15 +64,20 @@ loginForm.addEventListener('submit', async (e) => {
 
     } catch (error) {
         showError(error.message || 'An error occurred during login');
+        
+        // Reset button state
+        submitButton.innerHTML = originalButtonText;
+        submitButton.disabled = false;
     }
 });
 
 // Check if user is already logged in
-window.addEventListener('load', async () => {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    
-    if (session) {
-        // User is already logged in, redirect to dashboard
-        window.location.href = '/admin/dashboard.html';
+window.addEventListener('load', () => {
+    const adminUser = sessionStorage.getItem('adminUser');
+    if (adminUser) {
+        const user = JSON.parse(adminUser);
+        if (user.isLoggedIn) {
+            window.location.href = '/admin/dashboard.html';
+        }
     }
 }); 
