@@ -1,11 +1,39 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/client/index.html"
+      "src": "client/site/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "client/admin/**/*",
+      "use": "@vercel/static"
     }
   ],
-  "buildCommand": "cd client && npm install && npm run build",
-  "outputDirectory": "client/dist",
-  "installCommand": "cd client && npm install"
+  "routes": [
+    {
+      "src": "/login.html",
+      "dest": "/client/admin/login.html"
+    },
+    {
+      "src": "/login",
+      "dest": "/client/admin/login.html"
+    },
+    {
+      "src": "/tracking",
+      "dest": "/client/site/tracking-result.html"
+    },
+    {
+      "src": "/admin",
+      "dest": "/client/admin/login.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/client/admin/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/site/$1"
+    }
+  ]
 } 
