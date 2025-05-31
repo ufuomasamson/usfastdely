@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "serve ."
+    "start": "serve ."
   },
   "dependencies": {
     "serve": "^14.2.1"
