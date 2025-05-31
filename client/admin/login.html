@@ -168,7 +168,7 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+    <script src="https://supabase.com/downloads/supabase-js.js"></script>
     <!-- Login JavaScript -->
     <script>
       // Initialize Supabase client
@@ -176,19 +176,33 @@
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrcWZ5anBtaHFqYnFieHFoenh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk4MjI1NzAsImV4cCI6MjAyNTM5ODU3MH0.Uh_BG7GPwGnE_5odTuGj4eXkw9iW_X9YE2_Qm-QJ7Ow';
 
       // Create Supabase client with additional options
-      const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
-        auth: {
-          autoRefreshToken: true,
-          persistSession: true,
-          detectSessionInUrl: true
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey, {
+        db: {
+          schema: 'public'
         },
-        global: {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json'
-          }
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: false
         }
       });
+
+      // Test connection immediately
+      async function testConnection() {
+        try {
+          const { data, error } = await supabaseClient.from('admin').select('count').single();
+          if (error) {
+            console.error('Connection test error:', error);
+          } else {
+            console.log('Connection test successful:', data);
+          }
+        } catch (err) {
+          console.error('Connection test failed:', err);
+        }
+      }
+
+      // Run connection test on load
+      testConnection();
 
       // DOM Elements
       const loginForm = document.getElementById('loginForm');
