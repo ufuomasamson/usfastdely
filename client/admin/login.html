@@ -177,20 +177,45 @@
       const supabaseUrl = 'https://ykqfyjpmhqjbqbxqhzxw.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrcWZ5anBtaHFqYnFieHFoenh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk4MjI1NzAsImV4cCI6MjAyNTM5ODU3MH0.Uh_BG7GPwGnE_5odTuGj4eXkw9iW_X9YE2_Qm-QJ7Ow';
 
-      // Create Supabase client with retries and better error handling
+      // Create Supabase client with enhanced configuration
       const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
         auth: {
-          persistSession: true,
           autoRefreshToken: true,
-          detectSessionInUrl: false,
-          storage: window.sessionStorage
+          persistSession: true,
+          detectSessionInUrl: false
         },
         db: {
           schema: 'public'
         },
         global: {
           headers: {
-            'X-Client-Info': 'supabase-js@2.39.3',
+            'X-Client-Info': 'supabase-js@2.39.3'
+          },
+          fetch: (url, options = {}) => {
+            // Add custom retry logic
+            const fetchWithRetry = async (attempt = 1, maxAttempts = 3) => {
+              try {
+                const response = await fetch(url, {
+                  ...options,
+                  headers: {
+                    ...options.headers,
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                  }
+                });
+                if (!response.ok && attempt < maxAttempts) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response;
+              } catch (error) {
+                if (attempt < maxAttempts) {
+                  await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                  return fetchWithRetry(attempt + 1, maxAttempts);
+                }
+                throw error;
+              }
+            };
+            return fetchWithRetry();
           }
         }
       });
@@ -200,7 +225,7 @@
         return CryptoJS.SHA256(password).toString();
       }
 
-      // Test connection with retries
+      // Test connection with enhanced error handling
       async function testConnection(retries = 3) {
         for (let i = 0; i < retries; i++) {
           try {
@@ -208,14 +233,17 @@
             const { data, error } = await supabaseClient
               .from('admin')
               .select('id')
-              .limit(1);
+              .limit(1)
+              .single();
             
             if (error) {
               console.error('Connection test error:', error);
-              if (i === retries - 1) throw error;
-              // Wait before retrying
-              await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
-              continue;
+              if (error.message?.includes('Failed to fetch')) {
+                console.log('Network error detected, retrying...');
+                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+                continue;
+              }
+              throw error;
             }
             
             console.log('Connection test successful');
@@ -223,7 +251,6 @@
           } catch (err) {
             console.error('Connection test failed:', err);
             if (i === retries - 1) return false;
-            // Wait before retrying
             await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
           }
         }
@@ -233,7 +260,7 @@
       // Test connection on page load with better error handling
       testConnection().then(success => {
         if (!success) {
-          showError('Unable to connect to the server. Please try again later.');
+          showError('Unable to connect to the database. Please try again later.');
         }
       });
 
