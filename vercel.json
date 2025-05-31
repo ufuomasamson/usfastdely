@@ -2,8 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "client/**/*",
-      "use": "@vercel/static"
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
@@ -14,23 +17,23 @@
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
         "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
       },
-      "dest": "/client/dist/admin/$1"
+      "dest": "/admin/$1"
     },
     {
       "src": "/admin",
-      "dest": "/client/dist/admin/login.html"
+      "dest": "/admin/login.html"
     },
     {
       "src": "/admin/login",
-      "dest": "/client/dist/admin/login.html"
+      "dest": "/admin/login.html"
     },
     {
       "src": "/admin/dashboard",
-      "dest": "/client/dist/admin/dashboard.html"
+      "dest": "/admin/dashboard.html"
     },
     {
       "src": "/(.*)",
-      "dest": "/client/dist/$1"
+      "dest": "/$1"
     }
   ]
 } 

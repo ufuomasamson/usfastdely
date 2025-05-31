@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "npm run build:site && npm run build:admin",
-    "build:site": "cp -r site/* dist/",
-    "build:admin": "cp -r admin/* dist/admin/",
+    "build:site": "mkdir -p dist && cp -r site/* dist/",
+    "build:admin": "mkdir -p dist/admin && cp -r admin/* dist/admin/",
     "preview": "vite preview"
   },
   "dependencies": {
