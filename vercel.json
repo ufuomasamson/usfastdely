@@ -1,39 +1,29 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "client/site/**/*",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "client/admin/**/*",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
-      "src": "/login.html",
-      "dest": "/client/admin/login.html"
-    },
-    {
-      "src": "/login",
-      "dest": "/client/admin/login.html"
-    },
-    {
-      "src": "/tracking",
-      "dest": "/client/site/tracking-result.html"
+      "src": "/admin/(.*)",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
+      },
+      "continue": true
     },
     {
       "src": "/admin",
       "dest": "/client/admin/login.html"
     },
     {
-      "src": "/admin/(.*)",
-      "dest": "/client/admin/$1"
+      "src": "/admin/login",
+      "dest": "/client/admin/login.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/client/site/$1"
+      "src": "/admin/dashboard",
+      "dest": "/client/admin/dashboard.html"
+    },
+    {
+      "handle": "filesystem"
     }
   ]
 } 

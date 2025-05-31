@@ -178,8 +178,21 @@
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrcWZ5anBtaHFqYnFieHFoenh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk4MjI1NzAsImV4cCI6MjAyNTM5ODU3MH0.Uh_BG7GPwGnE_5odTuGj4eXkw9iW_X9YE2_Qm-QJ7Ow';
 
       // Create Supabase client
-      const { createClient } = supabase;
-      const supabaseClient = createClient(supabaseUrl, supabaseKey);
+      const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: false
+        },
+        db: {
+          schema: 'public'
+        },
+        global: {
+          headers: {
+            'X-Client-Info': 'supabase-js@2.39.3',
+          }
+        }
+      });
 
       // Hash password function
       function hashPassword(password) {
@@ -189,19 +202,28 @@
       // Test connection immediately
       async function testConnection() {
         try {
-          const { data, error } = await supabaseClient.from('admin').select('count').single();
+          console.log('Testing connection to:', supabaseUrl);
+          const { data, error } = await supabaseClient
+            .from('admin')
+            .select('count')
+            .limit(1);
+
           if (error) {
             console.error('Connection test error:', error);
-          } else {
-            console.log('Connection test successful:', data);
+            throw error;
           }
+
+          console.log('Connection test successful:', data);
+          return data;
         } catch (err) {
           console.error('Connection test failed:', err);
+          showError('Unable to connect to the server. Please try again later.');
+          throw err;
         }
       }
 
       // Run connection test on load
-      testConnection();
+      window.addEventListener('load', testConnection);
 
       // DOM Elements
       const loginForm = document.getElementById('loginForm');
