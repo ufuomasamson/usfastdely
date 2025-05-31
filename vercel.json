@@ -1,5 +1,11 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "client/**/*",
+      "use": "@vercel/static"
+    }
+  ],
   "routes": [
     {
       "src": "/admin/(.*)",
@@ -8,22 +14,23 @@
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
         "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization"
       },
-      "continue": true
+      "dest": "/client/dist/admin/$1"
     },
     {
       "src": "/admin",
-      "dest": "/client/admin/login.html"
+      "dest": "/client/dist/admin/login.html"
     },
     {
       "src": "/admin/login",
-      "dest": "/client/admin/login.html"
+      "dest": "/client/dist/admin/login.html"
     },
     {
       "src": "/admin/dashboard",
-      "dest": "/client/admin/dashboard.html"
+      "dest": "/client/dist/admin/dashboard.html"
     },
     {
-      "handle": "filesystem"
+      "src": "/(.*)",
+      "dest": "/client/dist/$1"
     }
   ]
 } 

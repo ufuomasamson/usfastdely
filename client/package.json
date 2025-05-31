@@ -2,5 +2,18 @@
   "name": "faster-delivery",
   "private": true,
   "version": "0.0.0",
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:site && npm run build:admin",
+    "build:site": "cp -r site/* dist/",
+    "build:admin": "cp -r admin/* dist/admin/",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "vite": "^5.1.0"
+  }
 }
