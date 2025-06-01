@@ -11,11 +11,6 @@
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwOTIyMDgzNSwiZXhwIjoyMDI0Nzk2ODM1fQ.qwkKqwgCYBcv3Uz3RzqFqkjGvEqkHq-nMEzJn_Qh1V0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         // Check authentication before loading dashboard
         window.addEventListener('load', async () => {
             try {
@@ -32,15 +27,9 @@
                 }
 
                 // Update UI with admin username
-                document.querySelector('.user-name').textContent = user.username;
-
-                // If we have a session, verify it's still valid
-                if (user.session) {
-                    const { data: { session }, error } = await supabase.auth.getSession();
-                    if (error || !session) {
-                        // Session expired, but we'll still allow access based on admin table auth
-                        console.warn('Session expired:', error);
-                    }
+                const userNameElement = document.querySelector('.user-name');
+                if (userNameElement) {
+                    userNameElement.textContent = user.username;
                 }
             } catch (error) {
                 console.error('Auth check error:', error);
@@ -51,18 +40,8 @@
         // Handle logout
         async function handleLogout() {
             try {
-                // Try to sign out of Supabase auth if we have a session
-                const adminUser = localStorage.getItem('adminUser');
-                if (adminUser) {
-                    const user = JSON.parse(adminUser);
-                    if (user.session) {
-                        await supabase.auth.signOut();
-                    }
-                }
-                
                 // Clear stored data
                 localStorage.removeItem('adminUser');
-                
                 // Redirect to login page
                 window.location.href = '/admin/login.html';
             } catch (error) {
