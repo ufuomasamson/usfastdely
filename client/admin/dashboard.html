@@ -11,20 +11,50 @@
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwOTIyMDgzNSwiZXhwIjoyMDI0Nzk2ODM1fQ.qwkKqwgCYBcv3Uz3RzqFqkjGvEqkHq-nMEzJn_Qh1V0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         // Check authentication before loading dashboard
         window.addEventListener('load', async () => {
-            const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwOTIyMDgzNSwiZXhwIjoyMDI0Nzk2ODM1fQ.qwkKqwgCYBcv3Uz3RzqFqkjGvEqkHq-nMEzJn_Qh1V0';
-            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                const adminUser = localStorage.getItem('adminUser');
+                
+                if (!session || !adminUser) {
+                    // User is not logged in, redirect to login page
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
 
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (!session) {
-                // User is not logged in, redirect to login page
+                // Update UI with admin username
+                const user = JSON.parse(adminUser);
+                document.querySelector('.user-name').textContent = user.username;
+            } catch (error) {
+                console.error('Auth check error:', error);
                 window.location.href = '/admin/login.html';
-                return;
             }
         });
+
+        // Handle logout
+        async function handleLogout() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                
+                // Clear stored data
+                localStorage.removeItem('sb-access-token');
+                localStorage.removeItem('sb-refresh-token');
+                localStorage.removeItem('adminUser');
+                
+                // Redirect to login page
+                window.location.href = '/admin/login.html';
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Error logging out. Please try again.');
+            }
+        }
     </script>
 </head>
 <body>
@@ -49,27 +79,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Dashboard JavaScript -->
     <script src="/admin/js/dashboard.js"></script>
-    
-    <script>
-        async function handleLogout() {
-            const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwOTIyMDgzNSwiZXhwIjoyMDI0Nzk2ODM1fQ.qwkKqwgCYBcv3Uz3RzqFqkjGvEqkHq-nMEzJn_Qh1V0';
-            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-            
-            try {
-                const { error } = await supabase.auth.signOut();
-                if (error) throw error;
-                
-                // Clear local storage
-                localStorage.removeItem('sb-access-token');
-                localStorage.removeItem('sb-refresh-token');
-                
-                // Redirect to login page
-                window.location.href = '/admin/login.html';
-            } catch (error) {
-                console.error('Error logging out:', error.message);
-            }
-        }
-    </script>
 </body>
 </html> 

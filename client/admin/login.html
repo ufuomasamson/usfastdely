@@ -177,90 +177,45 @@
       const supabaseUrl = 'https://ykqfyjpmhqjbqbxqhzxw.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrcWZ5anBtaHFqYnFieHFoenh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk4MjI1NzAsImV4cCI6MjAyNTM5ODU3MH0.Uh_BG7GPwGnE_5odTuGj4eXkw9iW_X9YE2_Qm-QJ7Ow';
 
-      // Create Supabase client with enhanced configuration
+      // Create Supabase client
       const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
         auth: {
           autoRefreshToken: true,
           persistSession: true,
           detectSessionInUrl: false
-        },
-        db: {
-          schema: 'public'
-        },
-        global: {
-          headers: {
-            'X-Client-Info': 'supabase-js@2.39.3'
-          },
-          fetch: (url, options = {}) => {
-            // Add custom retry logic
-            const fetchWithRetry = async (attempt = 1, maxAttempts = 3) => {
-              try {
-                const response = await fetch(url, {
-                  ...options,
-                  headers: {
-                    ...options.headers,
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache'
-                  }
-                });
-                if (!response.ok && attempt < maxAttempts) {
-                  throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response;
-              } catch (error) {
-                if (attempt < maxAttempts) {
-                  await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-                  return fetchWithRetry(attempt + 1, maxAttempts);
-                }
-                throw error;
-              }
-            };
-            return fetchWithRetry();
-          }
         }
       });
 
-      // Hash password function
-      function hashPassword(password) {
-        return CryptoJS.SHA256(password).toString();
-      }
-
       // Test connection with enhanced error handling
-      async function testConnection(retries = 3) {
-        for (let i = 0; i < retries; i++) {
-          try {
-            console.log(`Testing connection (attempt ${i + 1}/${retries})...`);
-            const { data, error } = await supabaseClient
-              .from('admin')
-              .select('id')
-              .limit(1)
-              .single();
-            
-            if (error) {
-              console.error('Connection test error:', error);
-              if (error.message?.includes('Failed to fetch')) {
-                console.log('Network error detected, retrying...');
-                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
-                continue;
-              }
-              throw error;
-            }
-            
-            console.log('Connection test successful');
-            return true;
-          } catch (err) {
-            console.error('Connection test failed:', err);
-            if (i === retries - 1) return false;
-            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+      async function testConnection() {
+        try {
+          console.log('Testing connection to Edge Function...');
+          const { data, error } = await supabaseClient.functions.invoke('admin-auth', {
+            body: { action: 'test' }
+          });
+          
+          if (error) {
+            console.error('Edge Function error:', error);
+            return false;
           }
+
+          if (!data || !data.status || data.status !== 'ok') {
+            console.error('Invalid response from Edge Function:', data);
+            return false;
+          }
+          
+          console.log('Connection test successful:', data.message);
+          return true;
+        } catch (err) {
+          console.error('Connection test failed:', err);
+          return false;
         }
-        return false;
       }
 
-      // Test connection on page load with better error handling
+      // Test connection on page load
       testConnection().then(success => {
         if (!success) {
-          showError('Unable to connect to the database. Please try again later.');
+          showError('Unable to connect to the server. Please try again later.');
         }
       });
 
@@ -289,58 +244,41 @@
           }
       };
 
-      // Handle form submission with better error handling
+      // Handle form submission
       loginForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           
           const username = document.getElementById('username').value.trim();
           const password = document.getElementById('password').value;
-          const hashedPassword = hashPassword(password);
           
           try {
               setLoading(true);
               console.log('Attempting login with:', { username });
 
-              // First test the connection
-              const isConnected = await testConnection(1);
-              if (!isConnected) {
-                throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
-              }
-
-              // Query the admin table for the username
-              const { data, error } = await supabaseClient
-                  .from('admin')
-                  .select('id, username, password')
-                  .eq('username', username)
-                  .single();
-
-              console.log('Supabase response:', { data, error });
+              const { data, error } = await supabaseClient.functions.invoke('admin-auth', {
+                body: { username, password }
+              });
 
               if (error) {
-                  if (error.code === 'PGRST301') {
-                    throw new Error('Database connection error. Please try again.');
-                  }
-                  throw new Error(error.message || 'Error checking credentials');
+                console.error('Edge Function error:', error);
+                throw new Error(error.message || 'Authentication failed');
               }
 
-              if (!data) {
-                  throw new Error('Invalid username or password');
+              if (!data || !data.session) {
+                console.error('Invalid response from Edge Function:', data);
+                throw new Error(data?.error || 'Invalid response from server');
               }
 
-              // Check if password matches
-              if (data.password === hashedPassword) {
-                  // Store admin info in session storage
-                  sessionStorage.setItem('adminUser', JSON.stringify({
-                      id: data.id,
-                      username: data.username,
-                      isLoggedIn: true
-                  }));
-                  
-                  // Redirect to dashboard
-                  window.location.href = '/admin/dashboard.html';
-              } else {
-                  throw new Error('Invalid username or password');
-              }
+              // Store admin info in session storage
+              sessionStorage.setItem('adminUser', JSON.stringify({
+                id: data.user.id,
+                username: data.user.username,
+                isLoggedIn: true,
+                session: data.session
+              }));
+              
+              // Redirect to dashboard
+              window.location.href = '/admin/dashboard.html';
 
           } catch (error) {
               console.error('Login error:', error);
@@ -355,7 +293,7 @@
           const adminUser = sessionStorage.getItem('adminUser');
           if (adminUser) {
               const user = JSON.parse(adminUser);
-              if (user.isLoggedIn) {
+              if (user.isLoggedIn && user.session) {
                   window.location.href = '/admin/dashboard.html';
               }
           }

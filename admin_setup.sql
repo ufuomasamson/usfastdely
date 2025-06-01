@@ -6,8 +6,9 @@ CREATE TABLE IF NOT EXISTS admin (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
 );
 
--- Insert a test admin user (username: admin, password: admin123)
+-- Insert a test admin user with hashed password (username: admin, password: admin123)
+-- The password is hashed using SHA-256
 INSERT INTO admin (username, password)
-VALUES ('admin', 'admin123')
+VALUES ('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9')
 ON CONFLICT (username) 
-DO UPDATE SET password = 'admin123'; 
+DO UPDATE SET password = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; 
