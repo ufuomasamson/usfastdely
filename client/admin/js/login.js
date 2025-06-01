@@ -1,6 +1,7 @@
 // Initialize Supabase client
 const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwOTIyMDgzNSwiZXhwIjoyMDI0Nzk2ODM1fQ.qwkKqwgCYBcv3Uz3RzqFqkjGvEqkHq-nMEzJn_Qh1V0';
+// Use anon key for public operations
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDkyMjA4MzUsImV4cCI6MjAyNDc5NjgzNX0.qwkKqwgCYBcv3Uz3RzqFqkjGvEqkHq-nMEzJn_Qh1V0';
 
 // Create Supabase client
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -53,16 +54,19 @@ loginForm.addEventListener('submit', async (e) => {
         // Hash the password
         const hashedPassword = await hashPassword(password);
 
-        // Query the admin table directly
+        // Query the admin table directly with RLS policy
         const { data: admin, error } = await supabase
             .from('admin')
             .select('id, username')
             .eq('username', username)
             .eq('password', hashedPassword)
-            .single();
+            .maybeSingle();
 
         if (error) {
             console.error('Database error:', error);
+            if (error.code === 'PGRST301') {
+                throw new Error('Database connection error. Please try again.');
+            }
             throw new Error('Authentication failed');
         }
 
@@ -70,29 +74,12 @@ loginForm.addEventListener('submit', async (e) => {
             throw new Error('Invalid username or password');
         }
 
-        // Create a session using Supabase auth
-        const { data: { session }, error: authError } = await supabase.auth.signInWithPassword({
-            email: `${username}@admin.faster.delivery`,
-            password: password
-        });
-
-        if (authError) {
-            console.error('Auth error:', authError);
-            // If auth fails, still allow login using admin table check
-            localStorage.setItem('adminUser', JSON.stringify({
-                id: admin.id,
-                username: admin.username,
-                isLoggedIn: true
-            }));
-        } else {
-            // Store both admin info and session
-            localStorage.setItem('adminUser', JSON.stringify({
-                id: admin.id,
-                username: admin.username,
-                isLoggedIn: true,
-                session: session
-            }));
-        }
+        // Store admin info in localStorage
+        localStorage.setItem('adminUser', JSON.stringify({
+            id: admin.id,
+            username: admin.username,
+            isLoggedIn: true
+        }));
         
         // Redirect to dashboard
         window.location.href = '/admin/dashboard.html';
