@@ -84,6 +84,92 @@
         .bg-primary {
             background-color: var(--primary) !important;
         }
+
+        /* Progress Bar Styles */
+        .shipment-progress {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--light);
+            border-radius: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .progress-track {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 50px;
+            margin-top: 30px;
+        }
+
+        .progress-step {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-icon.active {
+            background: var(--primary);
+            color: var(--light);
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            text-align: center;
+            max-width: 120px;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 70px;
+            right: 70px;
+            height: 2px;
+            background: #ddd;
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .progress-track {
+                padding: 0 20px;
+                overflow-x: auto;
+                justify-content: flex-start;
+                min-width: 600px;
+            }
+
+            .shipment-progress {
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 
@@ -192,6 +278,55 @@
                 </div>
             </div>
 
+            <!-- Shipment Progress Section -->
+            <div class="shipment-progress">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-route text-primary me-2"></i>
+                    Shipment Journey
+                </h5>
+                <div class="progress-track">
+                    <div class="progress-line">
+                        <div class="progress-line-fill" id="progressLineFill"></div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon active">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="step-label">
+                            <strong>Origin</strong>
+                            <div id="originLocation">-</div>
+                        </div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon" id="processingIcon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="step-label">
+                            <strong>Processing</strong>
+                            <div>Package Processing</div>
+                        </div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon" id="transitIcon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="step-label">
+                            <strong>In Transit</strong>
+                            <div id="currentLocation">-</div>
+                        </div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon" id="deliveredIcon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="step-label">
+                            <strong>Delivered</strong>
+                            <div id="destinationLocation">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="text-center mt-5">
                 <a href="index.html" class="btn btn-outline-primary rounded-pill px-4">
                     <i class="fas fa-arrow-left me-2"></i>
@@ -208,6 +343,35 @@
         
         // Create Supabase client
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Helper function to update progress bar
+        function updateProgressBar(status) {
+            const steps = ['Processing', 'In Transit', 'Delivered'];
+            const icons = document.querySelectorAll('.step-icon');
+            const progressFill = document.getElementById('progressLineFill');
+            
+            // Reset all icons
+            icons.forEach(icon => icon.classList.remove('active'));
+            
+            // Always activate origin
+            icons[0].classList.add('active');
+            
+            let progress = 0;
+            const currentStep = steps.indexOf(status) + 1;
+            
+            if (currentStep >= 0) {
+                // Calculate progress percentage
+                progress = (currentStep / 3) * 100;
+                
+                // Activate icons up to current step
+                for (let i = 0; i <= currentStep; i++) {
+                    if (icons[i]) icons[i].classList.add('active');
+                }
+            }
+            
+            // Update progress line
+            progressFill.style.width = `${progress}%`;
+        }
 
         // Helper function to set badge color
         function getStatusColor(status) {
@@ -298,6 +462,12 @@
                 document.getElementById('origin').textContent = shipment.origin || 'N/A';
                 document.getElementById('receiverName').textContent = shipment.receiver_name || 'N/A';
                 document.getElementById('destination').textContent = shipment.destination || 'N/A';
+
+                // Update progress bar locations and status
+                document.getElementById('originLocation').textContent = shipment.origin;
+                document.getElementById('currentLocation').textContent = `${shipment.current_state}, ${shipment.current_country}`;
+                document.getElementById('destinationLocation').textContent = shipment.destination;
+                updateProgressBar(shipment.status);
 
             } catch (err) {
                 // Hide loading and shipment details, show error
