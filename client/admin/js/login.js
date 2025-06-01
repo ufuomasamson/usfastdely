@@ -1,10 +1,15 @@
 // Initialize Supabase client
 const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
 // Use anon key for public operations
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDkyMjA4MzUsImV4cCI6MjAyNDc5NjgzNX0.qwkKqwgCYBcv3Uz3RzqFqkjGvEqkHq-nMEzJn_Qh1V0';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzNjI4MzUsImV4cCI6MjA2MzkzODgzNX0.ikIBv5P6U93kkcEUXQWrhjkH4n3JsLFgeMiK__6QgP8';
 
-// Create Supabase client
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+// Create Supabase client with additional options
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+    auth: {
+        autoRefreshToken: false,
+        persistSession: false
+    }
+});
 
 // DOM Elements
 const loginForm = document.getElementById('loginForm');
@@ -54,7 +59,7 @@ loginForm.addEventListener('submit', async (e) => {
         // Hash the password
         const hashedPassword = await hashPassword(password);
 
-        // Query the admin table directly with RLS policy
+        // First try to get the admin record
         const { data: admin, error } = await supabase
             .from('admin')
             .select('id, username')
@@ -64,8 +69,8 @@ loginForm.addEventListener('submit', async (e) => {
 
         if (error) {
             console.error('Database error:', error);
-            if (error.code === 'PGRST301') {
-                throw new Error('Database connection error. Please try again.');
+            if (error.message === 'Invalid API key') {
+                throw new Error('Server configuration error. Please contact support.');
             }
             throw new Error('Authentication failed');
         }
@@ -78,7 +83,8 @@ loginForm.addEventListener('submit', async (e) => {
         localStorage.setItem('adminUser', JSON.stringify({
             id: admin.id,
             username: admin.username,
-            isLoggedIn: true
+            isLoggedIn: true,
+            loginTime: new Date().toISOString()
         }));
         
         // Redirect to dashboard
@@ -98,11 +104,20 @@ window.addEventListener('load', async () => {
         const adminUser = localStorage.getItem('adminUser');
         if (adminUser) {
             const user = JSON.parse(adminUser);
-            if (user.isLoggedIn) {
+            // Check if login is less than 24 hours old
+            const loginTime = new Date(user.loginTime);
+            const now = new Date();
+            const hoursSinceLogin = (now - loginTime) / (1000 * 60 * 60);
+            
+            if (user.isLoggedIn && hoursSinceLogin < 24) {
                 window.location.href = '/admin/dashboard.html';
+            } else {
+                // Clear expired login
+                localStorage.removeItem('adminUser');
             }
         }
     } catch (error) {
         console.error('Session check error:', error);
+        localStorage.removeItem('adminUser');
     }
 }); 
