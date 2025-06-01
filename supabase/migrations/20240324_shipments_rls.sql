@@ -17,37 +17,23 @@ CREATE TABLE IF NOT EXISTS shipments (
 -- Enable RLS on shipments table
 ALTER TABLE shipments ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies if they exist
+-- Drop all existing policies
 DROP POLICY IF EXISTS "Enable read access for all users" ON shipments;
 DROP POLICY IF EXISTS "Enable insert access for authenticated users" ON shipments;
 DROP POLICY IF EXISTS "Enable update access for authenticated users" ON shipments;
 DROP POLICY IF EXISTS "Enable delete access for authenticated users" ON shipments;
 
--- Create policies for access
-CREATE POLICY "Enable read access for all users" 
-ON shipments FOR SELECT 
-TO anon
-USING (true);
-
-CREATE POLICY "Enable insert access for authenticated users" 
-ON shipments FOR INSERT 
-TO anon
-WITH CHECK (true);
-
-CREATE POLICY "Enable update access for authenticated users" 
-ON shipments FOR UPDATE 
+-- Create a single policy for all operations
+CREATE POLICY "Enable all access for all users" 
+ON shipments 
+FOR ALL 
 TO anon
 USING (true)
 WITH CHECK (true);
 
-CREATE POLICY "Enable delete access for authenticated users" 
-ON shipments FOR DELETE 
-TO anon
-USING (true);
-
--- Grant necessary permissions
-GRANT ALL ON shipments TO anon;
-GRANT USAGE, SELECT ON SEQUENCE shipments_id_seq TO anon;
+-- Grant full access to anonymous users
+GRANT ALL PRIVILEGES ON TABLE shipments TO anon;
+GRANT ALL PRIVILEGES ON SEQUENCE shipments_id_seq TO anon;
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_shipments_status ON shipments(status);
