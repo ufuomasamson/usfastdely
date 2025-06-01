@@ -8,6 +8,97 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary: #FF4800;
+            --secondary: #F2F2F4;
+            --dark: #1F1F2E;
+            --light: #FFFFFF;
+            --text: #757575;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--secondary);
+            margin: 0;
+            padding: 0;
+        }
+
+        .stats-card {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .stats-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light);
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .stats-info h3 {
+            font-size: 16px;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .stats-info p {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 5px 0 0;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: var(--light);
+            border-bottom: 1px solid var(--secondary);
+            padding: 20px;
+        }
+
+        .table th {
+            color: var(--text);
+            font-weight: 500;
+            border-bottom-width: 1px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: #e64100;
+            border-color: #e64100;
+        }
+    </style>
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -58,19 +149,235 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">FASTER Admin</a>
-            <div class="navbar-nav ms-auto">
-                <button class="btn btn-outline-light" onclick="handleLogout()">
-                    <i class="fas fa-sign-out-alt me-2"></i>Logout
-                </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-page="dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="shipments">
+                            <i class="fas fa-shipping-fast me-2"></i>Shipments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="create-shipment">
+                            <i class="fas fa-plus me-2"></i>Create Shipment
+                        </a>
+                    </li>
+                </ul>
+                <div class="navbar-nav ms-auto">
+                    <span class="nav-item me-3">
+                        <span class="text-light">Welcome, <span class="user-name">Admin</span></span>
+                    </span>
+                    <button class="btn btn-outline-light" onclick="handleLogout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <div class="container-fluid mt-4">
-        <!-- Content will be loaded by dashboard.js -->
+        <!-- Dashboard Page -->
+        <div class="page active" id="dashboard-page">
+            <!-- Stats Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3>Total Shipments</h3>
+                            <p class="total-orders">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3>In Transit</h3>
+                            <p class="in-transit">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3>Delivered</h3>
+                            <p class="delivered">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3>Issues</h3>
+                            <p class="issues">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Shipments Table -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Shipments</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="shipmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Tracking ID</th>
+                                    <th>Receiver</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Shipments will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipments Page -->
+        <div class="page" id="shipments-page">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="card-title mb-0">All Shipments</h5>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary" onclick="showPage('create-shipment')">
+                                <i class="fas fa-plus me-2"></i>New Shipment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="allShipmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Tracking Number</th>
+                                    <th>Sender Name</th>
+                                    <th>Receiver Name</th>
+                                    <th>Origin</th>
+                                    <th>Destination</th>
+                                    <th>Current Location</th>
+                                    <th>Status</th>
+                                    <th>Condition</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Shipments will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Shipment Page -->
+        <div class="page" id="create-shipment-page">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Create New Shipment</h5>
+                </div>
+                <div class="card-body">
+                    <form id="createShipmentForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Sender Name</label>
+                                    <input type="text" class="form-control" name="sender_name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Receiver Name</label>
+                                    <input type="text" class="form-control" name="receiver_name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Origin</label>
+                                    <input type="text" class="form-control" name="origin" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Destination</label>
+                                    <input type="text" class="form-control" name="destination" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Current Country</label>
+                                    <input type="text" class="form-control" name="current_country" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Current State</label>
+                                    <input type="text" class="form-control" name="current_state" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" name="status" required>
+                                        <option value="Processing">Processing</option>
+                                        <option value="In Transit">In Transit</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Delayed">Delayed</option>
+                                        <option value="On Hold">On Hold</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Condition</label>
+                                    <select class="form-select" name="condition" required>
+                                        <option value="Good">Good</option>
+                                        <option value="Damaged">Damaged</option>
+                                        <option value="Lost">Lost</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Create Shipment</button>
+                            <button type="button" class="btn btn-secondary" onclick="showPage('shipments')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    
+
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Dashboard JavaScript -->
