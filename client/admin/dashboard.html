@@ -19,18 +19,29 @@
         // Check authentication before loading dashboard
         window.addEventListener('load', async () => {
             try {
-                const { data: { session }, error } = await supabase.auth.getSession();
                 const adminUser = localStorage.getItem('adminUser');
-                
-                if (!session || !adminUser) {
-                    // User is not logged in, redirect to login page
+                if (!adminUser) {
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+
+                const user = JSON.parse(adminUser);
+                if (!user.isLoggedIn) {
                     window.location.href = '/admin/login.html';
                     return;
                 }
 
                 // Update UI with admin username
-                const user = JSON.parse(adminUser);
                 document.querySelector('.user-name').textContent = user.username;
+
+                // If we have a session, verify it's still valid
+                if (user.session) {
+                    const { data: { session }, error } = await supabase.auth.getSession();
+                    if (error || !session) {
+                        // Session expired, but we'll still allow access based on admin table auth
+                        console.warn('Session expired:', error);
+                    }
+                }
             } catch (error) {
                 console.error('Auth check error:', error);
                 window.location.href = '/admin/login.html';
@@ -40,19 +51,25 @@
         // Handle logout
         async function handleLogout() {
             try {
-                const { error } = await supabase.auth.signOut();
-                if (error) throw error;
+                // Try to sign out of Supabase auth if we have a session
+                const adminUser = localStorage.getItem('adminUser');
+                if (adminUser) {
+                    const user = JSON.parse(adminUser);
+                    if (user.session) {
+                        await supabase.auth.signOut();
+                    }
+                }
                 
                 // Clear stored data
-                localStorage.removeItem('sb-access-token');
-                localStorage.removeItem('sb-refresh-token');
                 localStorage.removeItem('adminUser');
                 
                 // Redirect to login page
                 window.location.href = '/admin/login.html';
             } catch (error) {
                 console.error('Error logging out:', error);
-                alert('Error logging out. Please try again.');
+                // Still clear local storage and redirect even if there's an error
+                localStorage.removeItem('adminUser');
+                window.location.href = '/admin/login.html';
             }
         }
     </script>

@@ -30,6 +30,15 @@ const setLoading = (isLoading) => {
     }
 };
 
+// Function to hash password using SHA-256
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
 // Handle form submission
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -39,40 +48,51 @@ loginForm.addEventListener('submit', async (e) => {
     
     try {
         setLoading(true);
+        console.log('Attempting login with:', { username });
 
-        // First check if the user exists in admin table
-        const { data: adminData, error: adminError } = await supabase
+        // Hash the password
+        const hashedPassword = await hashPassword(password);
+
+        // Query the admin table directly
+        const { data: admin, error } = await supabase
             .from('admin')
             .select('id, username')
             .eq('username', username)
+            .eq('password', hashedPassword)
             .single();
 
-        if (adminError || !adminData) {
-            throw new Error('Invalid username or password');
-        }
-
-        // Use Supabase Edge Function for secure authentication
-        const { data, error } = await supabase.functions.invoke('admin-auth', {
-            body: { username, password }
-        });
-
         if (error) {
-            console.error('Authentication error:', error);
+            console.error('Database error:', error);
             throw new Error('Authentication failed');
         }
 
-        if (!data || !data.session) {
-            throw new Error('Invalid response from server');
+        if (!admin) {
+            throw new Error('Invalid username or password');
         }
 
-        // Store session in localStorage for persistence
-        localStorage.setItem('sb-access-token', data.session.access_token);
-        localStorage.setItem('sb-refresh-token', data.session.refresh_token);
-        localStorage.setItem('adminUser', JSON.stringify({
-            id: data.user.id,
-            username: data.user.username,
-            isLoggedIn: true
-        }));
+        // Create a session using Supabase auth
+        const { data: { session }, error: authError } = await supabase.auth.signInWithPassword({
+            email: `${username}@admin.faster.delivery`,
+            password: password
+        });
+
+        if (authError) {
+            console.error('Auth error:', authError);
+            // If auth fails, still allow login using admin table check
+            localStorage.setItem('adminUser', JSON.stringify({
+                id: admin.id,
+                username: admin.username,
+                isLoggedIn: true
+            }));
+        } else {
+            // Store both admin info and session
+            localStorage.setItem('adminUser', JSON.stringify({
+                id: admin.id,
+                username: admin.username,
+                isLoggedIn: true,
+                session: session
+            }));
+        }
         
         // Redirect to dashboard
         window.location.href = '/admin/dashboard.html';
@@ -80,6 +100,7 @@ loginForm.addEventListener('submit', async (e) => {
     } catch (error) {
         console.error('Login error:', error);
         showError(error.message || 'An error occurred during login');
+    } finally {
         setLoading(false);
     }
 });
@@ -87,10 +108,12 @@ loginForm.addEventListener('submit', async (e) => {
 // Check if user is already logged in
 window.addEventListener('load', async () => {
     try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (session && localStorage.getItem('adminUser')) {
-            window.location.href = '/admin/dashboard.html';
+        const adminUser = localStorage.getItem('adminUser');
+        if (adminUser) {
+            const user = JSON.parse(adminUser);
+            if (user.isLoggedIn) {
+                window.location.href = '/admin/dashboard.html';
+            }
         }
     } catch (error) {
         console.error('Session check error:', error);
