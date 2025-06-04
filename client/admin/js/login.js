@@ -1,7 +1,7 @@
 // Initialize Supabase client
-const supabaseUrl = 'https://aiyktqttqqtexxhocoip.supabase.co';
+const supabaseUrl = 'https://kuchyzfvwdzdzvrslerq.supabase.co';
 // Use anon key for public operations
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpeWt0cXR0cXF0ZXh4aG9jb2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzNjI4MzUsImV4cCI6MjA2MzkzODgzNX0.ikIBv5P6U93kkcEUXQWrhjkH4n3JsLFgeMiK__6QgP8';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1Y2h5emZ2d2R6ZHp2cnNsZXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NjYyNjMsImV4cCI6MjA2NDU0MjI2M30.5p1qg2DpyE5Pl_nH4pX3gY-Q_TN1YknhXsvrUF4egeU';
 
 // Create Supabase client with additional options
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
