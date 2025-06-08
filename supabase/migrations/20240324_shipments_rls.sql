@@ -2,8 +2,11 @@
 CREATE TABLE IF NOT EXISTS shipments (
     id SERIAL PRIMARY KEY,
     tracking_number TEXT UNIQUE DEFAULT 'UFD' || LPAD(FLOOR(RANDOM() * 10000000000)::TEXT, 10, '0'),
+    item_name TEXT NOT NULL,
     sender_name TEXT NOT NULL,
+    sender_address TEXT NOT NULL,
     receiver_name TEXT NOT NULL,
+    receiver_address TEXT NOT NULL,
     origin TEXT NOT NULL,
     destination TEXT NOT NULL,
     current_country TEXT NOT NULL,

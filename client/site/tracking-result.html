@@ -198,6 +198,7 @@
             <div class="text-center mb-5">
                 <h2 class="mb-3 text-dark">Tracking Details</h2>
                 <p class="text-muted">Tracking Number: <strong id="trackingNumber" class="text-primary"></strong></p>
+                <p class="text-muted">Item: <strong id="itemName" class="text-dark"></strong></p>
             </div>
 
             <div class="row g-4">
@@ -223,56 +224,30 @@
                     </div>
                 </div>
 
-                <!-- Location Card -->
-                <div class="col-md-6">
+                <!-- Sender & Receiver Info -->
+                <div class="col-md-12">
                     <div class="card info-card shadow-sm border-0 rounded-4">
                         <div class="card-body p-4">
-                            <h5 class="card-title mb-4">
-                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                                Current Location
-                            </h5>
                             <div class="row">
-                                <div class="col-6">
-                                    <p class="text-muted mb-1">Country</p>
-                                    <p class="fw-bold" id="currentCountry">-</p>
+                                <div class="col-md-6">
+                                    <h5 class="card-title mb-4">
+                                        <i class="fas fa-user text-primary me-2"></i>
+                                        Sender Information
+                                    </h5>
+                                    <p class="mb-2">Name: <strong id="senderName"></strong></p>
+                                    <p class="mb-2">Address: <strong id="senderAddress"></strong></p>
+                                    <p class="mb-2">Origin: <strong id="origin"></strong></p>
                                 </div>
-                                <div class="col-6">
-                                    <p class="text-muted mb-1">State/Region</p>
-                                    <p class="fw-bold" id="currentState">-</p>
+                                <div class="col-md-6">
+                                    <h5 class="card-title mb-4">
+                                        <i class="fas fa-user text-primary me-2"></i>
+                                        Receiver Information
+                                    </h5>
+                                    <p class="mb-2">Name: <strong id="receiverName"></strong></p>
+                                    <p class="mb-2">Address: <strong id="receiverAddress"></strong></p>
+                                    <p class="mb-2">Destination: <strong id="destination"></strong></p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sender Info -->
-                <div class="col-md-6">
-                    <div class="card info-card shadow-sm border-0 rounded-4">
-                        <div class="card-body p-4">
-                            <h5 class="card-title mb-4">
-                                <i class="fas fa-user text-primary me-2"></i>
-                                Sender Information
-                            </h5>
-                            <p class="text-muted mb-1">Name</p>
-                            <p class="fw-bold" id="senderName">-</p>
-                            <p class="text-muted mb-1">Origin</p>
-                            <p class="fw-bold" id="origin">-</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Receiver Info -->
-                <div class="col-md-6">
-                    <div class="card info-card shadow-sm border-0 rounded-4">
-                        <div class="card-body p-4">
-                            <h5 class="card-title mb-4">
-                                <i class="fas fa-user text-primary me-2"></i>
-                                Receiver Information
-                            </h5>
-                            <p class="text-muted mb-1">Name</p>
-                            <p class="fw-bold" id="receiverName">-</p>
-                            <p class="text-muted mb-1">Destination</p>
-                            <p class="fw-bold" id="destination">-</p>
                         </div>
                     </div>
                 </div>
@@ -447,6 +422,7 @@
 
                 // Update DOM with shipment details
                 document.getElementById('trackingNumber').textContent = shipment.tracking_number;
+                document.getElementById('itemName').textContent = shipment.item_name;
                 
                 const statusBadge = document.getElementById('status');
                 statusBadge.textContent = shipment.status || 'N/A';
@@ -459,8 +435,10 @@
                 document.getElementById('currentCountry').textContent = shipment.current_country || 'N/A';
                 document.getElementById('currentState').textContent = shipment.current_state || 'N/A';
                 document.getElementById('senderName').textContent = shipment.sender_name || 'N/A';
+                document.getElementById('senderAddress').textContent = shipment.sender_address || 'N/A';
                 document.getElementById('origin').textContent = shipment.origin || 'N/A';
                 document.getElementById('receiverName').textContent = shipment.receiver_name || 'N/A';
+                document.getElementById('receiverAddress').textContent = shipment.receiver_address || 'N/A';
                 document.getElementById('destination').textContent = shipment.destination || 'N/A';
 
                 // Update progress bar locations and status

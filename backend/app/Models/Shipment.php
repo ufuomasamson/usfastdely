@@ -13,8 +13,11 @@ class Shipment extends Model
 
     protected $fillable = [
         'trackingNumber',
+        'itemName',
         'senderName',
+        'senderAddress',
         'receiverName',
+        'receiverAddress',
         'origin',
         'destination',
         'currentCountry',

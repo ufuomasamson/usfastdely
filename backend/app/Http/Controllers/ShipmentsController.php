@@ -18,8 +18,11 @@ class ShipmentsController extends Controller
     {
         // Create a new shipment (admin)
         $validated = $request->validate([
+            'itemName' => 'required|string',
             'senderName' => 'required|string',
+            'senderAddress' => 'required|string',
             'receiverName' => 'required|string',
+            'receiverAddress' => 'required|string',
             'origin' => 'required|string',
             'destination' => 'required|string',
             'currentCountry' => 'required|string',

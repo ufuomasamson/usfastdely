@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('shipments', function (Blueprint $table) {
             $table->id();
             $table->string('trackingNumber')->unique();
+            $table->string('itemName');
             $table->string('senderName');
+            $table->string('senderAddress');
             $table->string('receiverName');
+            $table->string('receiverAddress');
             $table->string('origin');
             $table->string('destination');
             $table->string('currentCountry');
