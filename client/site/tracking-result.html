@@ -432,8 +432,6 @@
                 conditionBadge.textContent = shipment.condition || 'N/A';
                 conditionBadge.className = `status-badge text-white ${getConditionColor(shipment.condition)}`;
 
-                document.getElementById('currentCountry').textContent = shipment.current_country || 'N/A';
-                document.getElementById('currentState').textContent = shipment.current_state || 'N/A';
                 document.getElementById('senderName').textContent = shipment.sender_name || 'N/A';
                 document.getElementById('senderAddress').textContent = shipment.sender_address || 'N/A';
                 document.getElementById('origin').textContent = shipment.origin || 'N/A';
