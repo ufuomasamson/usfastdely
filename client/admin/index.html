@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faster Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+      :root {
+        --primary: #FF4800;
+        --secondary: #F2F2F4;
+        --dark: #1F1F2E;
+        --light: #FFFFFF;
+        --text: #757575;
+      }
+
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--secondary);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 250px;
+        background-color: var(--dark);
+        padding: 20px;
+        color: var(--light);
+        z-index: 1000;
+      }
+
+      .logo {
+        padding: 20px;
+        text-align: center;
+        background-color: var(--dark);
+        margin-bottom: 20px;
+      }
+
+      .logo h1 {
+        color: var(--light);
+        font-size: 24px;
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .logo span {
+        color: var(--primary);
+      }
+
+      .nav-link {
+        color: var(--light) !important;
+        padding: 12px 20px;
+        margin: 4px 0;
+        border-radius: 5px;
+        transition: all 0.3s;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        background-color: var(--primary);
+        color: var(--light) !important;
+      }
+
+      .nav-link i {
+        margin-right: 10px;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .header {
+        background-color: var(--light);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+      }
+
+      .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .user-name {
+        color: var(--dark);
+        font-weight: 500;
+      }
+
+      .user-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #757575;
+      }
+
+      /* Stats Cards */
+      .stats-card {
+        background-color: var(--light);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        height: 100%;
+        margin-bottom: 20px;
+      }
+
+      .stats-icon {
+        width: 60px;
+        height: 60px;
+        background-color: var(--primary);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--light);
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+
+      .stats-info h3 {
+        font-size: 16px;
+        color: var(--text);
+        margin: 0;
+      }
+
+      .stats-info p {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--dark);
+        margin: 5px 0 0;
+      }
+
+      /* Table */
+      .card {
+        background-color: var(--light);
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+
+      .card-header {
+        background-color: var(--light);
+        border-bottom: 1px solid var(--secondary);
+        padding: 20px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 20px;
+        color: var(--dark);
+      }
+
+      .table th {
+        color: var(--text);
+        font-weight: 500;
+        border-bottom-width: 1px;
+        padding: 12px 20px;
+      }
+
+      .table td {
+        color: var(--dark);
+        vertical-align: middle;
+        padding: 12px 20px;
+      }
+
+      .table .badge {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+      }
+
+      .btn-primary:hover {
+        background-color: #e64100;
+        border-color: #e64100;
+      }
+
+      .btn-sm {
+        padding: 5px 10px;
+        margin: 0 2px;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 200px;
+        }
+        .main-content {
+          margin-left: 200px;
+        }
+        .stats-card {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .sidebar {
+          width: 100%;
+          position: relative;
+          margin-bottom: 20px;
+        }
+        .main-content {
+          margin-left: 0;
+        }
+      }
+
+      .page {
+        display: none;
+      }
+      .page.active {
+        display: block;
+      }
+      #dashboard-page {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <h1>Faster<span>Delivery</span></h1>
+      </div>
+      <nav>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" data-page="dashboard">
+              <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-page="shipments">
+              <i class="fas fa-shipping-fast"></i> Shipments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-page="create-shipment">
+              <i class="fas fa-plus-circle"></i> Create Shipment
+            </a>
+          </li>
+          <li class="nav-item mt-auto">
+            <a class="nav-link text-danger" href="#" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Dashboard Page -->
+      <div class="page active" id="dashboard-page">
+        <header class="header">
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <div class="col">
+                <h1 class="h3 mb-0">Dashboard</h1>
+              </div>
+              <div class="col-auto">
+                <div class="user-menu">
+                  <span class="user-name">Admin</span>
+                  <div class="user-image">
+                    <i class="fas fa-user"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="container-fluid">
+          <!-- Stats Cards -->
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-md-3">
+              <div class="stats-card">
+                <div class="stats-icon">
+                  <i class="fas fa-box"></i>
+                </div>
+                <div class="stats-info">
+                  <h3>Total Shipments</h3>
+                  <p class="total-orders">0</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+              <div class="stats-card">
+                <div class="stats-icon">
+                  <i class="fas fa-truck"></i>
+                </div>
+                <div class="stats-info">
+                  <h3>In Transit</h3>
+                  <p class="in-transit">0</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+              <div class="stats-card">
+                <div class="stats-icon">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stats-info">
+                  <h3>Delivered</h3>
+                  <p class="delivered">0</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+              <div class="stats-card">
+                <div class="stats-icon">
+                  <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="stats-info">
+                  <h3>Issues</h3>
+                  <p class="issues">0</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shipments Page -->
+      <div class="page" id="shipments-page">
+        <header class="header">
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <div class="col">
+                <h1 class="h3 mb-0">All Shipments</h1>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-header">
+              <div class="row align-items-center">
+                <div class="col-md-6">
+                  <input type="text" class="form-control" id="searchShipments" placeholder="Search shipments...">
+                </div>
+                <div class="col-md-4">
+                  <select class="form-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="Processing">Processing</option>
+                    <option value="In Transit">In Transit</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Delayed">Delayed</option>
+                    <option value="On Hold">On Hold</option>
+                  </select>
+                </div>
+                <div class="col-md-2 text-end">
+                  <button class="btn btn-primary btn-sm w-100" onclick="showPage('create-shipment')">
+                    <i class="fas fa-plus"></i> New Shipment
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover" id="allShipmentsTable">
+                  <thead>
+                    <tr>
+                      <th>Tracking Number</th>
+                      <th>Sender Name</th>
+                      <th>Receiver Name</th>
+                      <th>Origin</th>
+                      <th>Destination</th>
+                      <th>Current Location</th>
+                      <th>Status</th>
+                      <th>Condition</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Shipments will be populated here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Shipment Page -->
+      <div class="page" id="create-shipment-page">
+        <header class="header">
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <div class="col">
+                <h1 class="h3 mb-0">Create New Shipment</h1>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-body">
+              <form id="createShipmentForm">
+                <div class="row g-3">
+                  <div class="col-md-12">
+                    <div class="mb-3">
+                      <label class="form-label">Item Name</label>
+                      <input type="text" class="form-control" name="item_name" required placeholder="Enter item name">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Sender Name</label>
+                      <input type="text" class="form-control" name="sender_name" required placeholder="Enter sender's name">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Receiver Name</label>
+                      <input type="text" class="form-control" name="receiver_name" required placeholder="Enter receiver's name">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Sender Address</label>
+                      <textarea class="form-control" name="sender_address" rows="3" required placeholder="Enter complete sender address"></textarea>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Receiver Address</label>
+                      <textarea class="form-control" name="receiver_address" rows="3" required placeholder="Enter complete receiver address"></textarea>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Origin</label>
+                      <input type="text" class="form-control" name="origin" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Destination</label>
+                      <input type="text" class="form-control" name="destination" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Current Country</label>
+                      <input type="text" class="form-control" name="current_country" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Current State</label>
+                      <input type="text" class="form-control" name="current_state" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Status</label>
+                      <select class="form-select" name="status" required>
+                        <option value="Processing">Processing</option>
+                        <option value="In Transit">In Transit</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Delayed">Delayed</option>
+                        <option value="On Hold">On Hold</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Condition</label>
+                      <select class="form-select" name="condition" required>
+                        <option value="Good">Good</option>
+                        <option value="Damaged">Damaged</option>
+                        <option value="Lost">Lost</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <button type="submit" class="btn btn-primary">Create Shipment</button>
+                  <button type="button" class="btn btn-secondary" onclick="showPage('shipments')">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Custom JavaScript -->
+    <script src="/admin/js/dashboard.js"></script>
+  </body>
+</html> 
